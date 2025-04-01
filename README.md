@@ -1,1 +1,1 @@
-# Pok-dex-PFC
+# Pokedex-PFC
