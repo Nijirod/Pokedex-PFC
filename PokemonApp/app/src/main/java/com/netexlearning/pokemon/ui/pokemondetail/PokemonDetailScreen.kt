@@ -13,8 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.netexlearning.pokemon.PokemonDetail
 import com.netexlearning.pokemon.samplePokemonDetail
 import androidx.compose.ui.res.painterResource
-import com.netexlearning.pokemon.pokemonList
-import com.netexlearning.pokemon.ui.pokemonlist.PokemonListScreen
+import coil.compose.AsyncImage
 
 @Composable
 fun PokemonDetailScreen(pokemonDetail: PokemonDetail, modifier: Modifier = Modifier) {
@@ -24,27 +23,38 @@ fun PokemonDetailScreen(pokemonDetail: PokemonDetail, modifier: Modifier = Modif
         modifier = modifier
             .padding(16.dp)
             .verticalScroll(scrollState)
+            .fillMaxWidth()
     ) {
         Text(text = "ID: ${pokemonDetail.id}", style = MaterialTheme.typography.titleLarge)
+        Spacer(modifier = Modifier.height(8.dp))
         Text(text = "Name: ${pokemonDetail.name}", style = MaterialTheme.typography.titleMedium)
+        Spacer(modifier = Modifier.height(8.dp))
         Text(text = "Order: #${pokemonDetail.order}", style = MaterialTheme.typography.bodyMedium)
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        pokemonDetail.spritesURLs.firstOrNull()?.let {
-            Image(
-                painter = painterResource(id = it),
-                contentDescription = "Image of ${pokemonDetail.name}",
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        Spacer(modifier = Modifier.height(16.dp))
+        AsyncImage(
+            model = samplePokemonDetail.spritesURLs.frontDefault,
+            contentDescription = "Image of ${samplePokemonDetail.name}",
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Species: ${pokemonDetail.species}", style = MaterialTheme.typography.bodyMedium)
-        Text(text = "Types: ${pokemonDetail.types.joinToString(", ")}", style = MaterialTheme.typography.bodyMedium)
-        Text(text = "Abilities: ${pokemonDetail.abilities.joinToString(", ")}", style = MaterialTheme.typography.bodyMedium)
-        Text(text = "Stats: ${pokemonDetail.stats.joinToString(", ")}", style = MaterialTheme.typography.bodyMedium)
+        Text(text = "Species: ${pokemonDetail.species.name}", style = MaterialTheme.typography.bodyMedium)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = "Types: ${pokemonDetail.types.joinToString(", ") { it.name }}", style = MaterialTheme.typography.bodyMedium)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = "Abilities: ${pokemonDetail.abilities.joinToString(", ") { it.name }}", style = MaterialTheme.typography.bodyMedium)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Column {
+            Text(text = "Stats:", style = MaterialTheme.typography.bodyMedium)
+            pokemonDetail.stats.forEach { stat ->
+                Text(text = "${stat.name}: ${stat.value}", style = MaterialTheme.typography.bodyMedium)
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -55,14 +65,10 @@ fun PokemonDetailScreen(pokemonDetail: PokemonDetail, modifier: Modifier = Modif
         }
     }
 }
-
 @Preview(showBackground = true)
 @Composable
-fun PokemonDetailPreview() {
-    PokemonDetailScreen(pokemonDetail = samplePokemonDetail)
-}
-@Preview(showBackground = true)
-@Composable
-fun PokemonListPreview() {
-    PokemonListScreen(list = pokemonList)
+fun PokemonDetailScreenPreview() {
+    PokemonDetailScreen(
+        pokemonDetail = samplePokemonDetail
+    )
 }

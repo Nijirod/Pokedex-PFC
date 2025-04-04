@@ -7,9 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.netexlearning.pokemon.ui.pokemondetail.PokemonDetailScreen
@@ -30,11 +28,13 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController = navController, startDestination = "pokemonList") {
                         composable("pokemonList") {
                             PokemonListScreen(
-                                list = pokemonList,
+                                list = pokemonListMock,
+                                navController = navController,
                                 modifier = Modifier.padding(paddingValues)
                             )
                         }
-                        composable("pokemonDetail/{pokemonId}") {
+                        composable("pokemonDetail/{pokemonId}") { backStackEntry ->
+                            val pokemonId = backStackEntry.arguments?.getString("pokemonId")
                             PokemonDetailScreen(
                                 pokemonDetail = samplePokemonDetail,
                                 modifier = Modifier.padding(paddingValues)
@@ -45,25 +45,5 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-    @Preview(showBackground = true)
-    @Composable
-    fun PokemonListPreview() {
-        PokemonAppTheme {
-            Scaffold { paddingValues ->
-                PokemonListScreen(
-                    list = pokemonList,
-                    modifier = Modifier.padding(paddingValues)
-                )
-            }
-        }
-    }
-    @Preview(showBackground = true)
-    @Composable
-    fun PokemonDetailPreview() {
-        PokemonAppTheme {
-            PokemonDetailScreen(pokemonDetail = samplePokemonDetail)
-        }
-    }
-
 }
 
