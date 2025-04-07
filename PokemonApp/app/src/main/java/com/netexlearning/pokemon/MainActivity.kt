@@ -18,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.netexlearning.pokemon.ui.viewmodel.PokemonListViewModel
+import com.netexlearning.pokemon.ui.navigation.PokemonNavigation
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -27,6 +28,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PokemonAppTheme {
                 val navController = rememberNavController()
+                val pokemonNavigation = PokemonNavigation(navController)
                 Scaffold(modifier = Modifier.fillMaxSize()) { paddingValues ->
                     NavHost(navController = navController, startDestination = "pokemonList") {
                         composable("pokemonList") {
@@ -34,7 +36,7 @@ class MainActivity : ComponentActivity() {
                             val pokemonList = viewModel.pokemonList.collectAsState().value
                             PokemonListScreen(
                                 pokemonList = pokemonList,
-                                navController = navController,
+                                pokemonNavigation = pokemonNavigation,
                                 modifier = Modifier.padding(paddingValues)
                             )
                         }

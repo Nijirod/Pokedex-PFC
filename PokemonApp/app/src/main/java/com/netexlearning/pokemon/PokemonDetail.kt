@@ -1,6 +1,6 @@
 package com.netexlearning.pokemon
 
-import com.netexlearning.pokemon.api.Ability
+import com.netexlearning.pokemon.api.AbilityDetail
 import com.netexlearning.pokemon.api.Cries
 import com.netexlearning.pokemon.api.Form
 import com.netexlearning.pokemon.api.Species
@@ -17,14 +17,15 @@ data class PokemonDetail(
     val isDefault: Boolean?,
     val cries: Cries?,
     val spritesURLs: Sprites?,
-    val abilities: List<Ability>?,
-    val stats: List<StatDetail>?,
+    val abilities: List<AbilityDetail>?,
+    val stats: List<Stat>?,
     val weight: String?,
     val height: String?,
 )
 
-data class StatDetail(
+data class Stat(
     val name: String,
+    val effort: String,
     val value: Int
 )
 
@@ -57,16 +58,16 @@ val samplePokemonDetail = PokemonDetail(
     null
     )),
     abilities = listOf(
-        Ability("overgrow", url = "https://pokeapi.co/api/v2/ability/65/"),
-        Ability("chlorophyll", url = "https://pokeapi.co/api/v2/ability/34/" )
+        AbilityDetail("overgrow", url = "https://pokeapi.co/api/v2/ability/65/"),
+        AbilityDetail("chlorophyll", url = "https://pokeapi.co/api/v2/ability/34/" )
     ),
     stats = listOf(
-        StatDetail("speed", 45),
-        StatDetail("special-defense", 65),
-        StatDetail("special-attack", 65),
-        StatDetail("defense", 49),
-        StatDetail("attack", 49),
-        StatDetail("hp", 45)
+        Stat("speed", "0",45),
+        Stat("special-defense","0", 65),
+        Stat("special-attack", "0",65),
+        Stat("defense", "0",49),
+        Stat("attack","0", 49),
+        Stat("hp", "0",45)
     ),
     weight = "6.9 kg",
     height = "0.7 m"

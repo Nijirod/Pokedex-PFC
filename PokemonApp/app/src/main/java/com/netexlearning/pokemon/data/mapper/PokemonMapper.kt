@@ -2,7 +2,7 @@ package com.netexlearning.pokemon.data.mapper
 
 import com.netexlearning.pokemon.Pokemon
 import com.netexlearning.pokemon.PokemonDetail
-import com.netexlearning.pokemon.StatDetail
+import com.netexlearning.pokemon.Stat
 import com.netexlearning.pokemon.api.*
 
 object PokemonMapper {
@@ -14,20 +14,20 @@ object PokemonMapper {
             species = detailResponse.species?.let { Species(it.name, it.url) },
             types = detailResponse.types?.map { TypeName(it.type.name, it.type.url) },
             form = detailResponse.form?.let { Form(it.name, it.url) },
-            isDefault = detailResponse.isDefault,
+            isDefault = detailResponse.is_default,
             cries = detailResponse.cries?.let { Cries(it.latest, it.legacy) },
             spritesURLs = Sprites(
-                detailResponse.sprites?.frontDefault,
-                detailResponse.sprites?.backDefault,
-                detailResponse.sprites?.frontShiny,
-                detailResponse.sprites?.backShiny,
-                detailResponse.sprites?.frontFemale,
-                detailResponse.sprites?.backFemale,
-                detailResponse.sprites?.frontShinyFemale,
-                detailResponse.sprites?.backShinyFemale
+                detailResponse.sprites?.back_default,
+                detailResponse.sprites?.back_female,
+                detailResponse.sprites?.back_shiny,
+                detailResponse.sprites?.back_shiny_female,
+                detailResponse.sprites?.front_default,
+                detailResponse.sprites?.front_female,
+                detailResponse.sprites?.front_shiny,
+                detailResponse.sprites?.front_shiny_female,
             ),
-            abilities = detailResponse.abilities?.map { Ability(it.name, it.url) },
-            stats = detailResponse.stats?.map { StatDetail(it.stat.name, it.baseStat) },
+            abilities = detailResponse.abilities?.map { AbilityDetail(it.ability.name, it.ability.url) },
+            stats = detailResponse.stats?.map { Stat(it.stat.name, it.effort.toString(), it.base_stat) },
             weight = "${detailResponse.weight} kg",
             height = "${detailResponse.height} m"
         )

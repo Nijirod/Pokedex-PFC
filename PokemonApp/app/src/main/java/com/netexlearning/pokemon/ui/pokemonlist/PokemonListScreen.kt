@@ -12,26 +12,33 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.netexlearning.pokemon.Pokemon
 import coil.compose.AsyncImage
+import com.netexlearning.pokemon.ui.navigation.PokemonNavigation
 
 @Composable
-fun PokemonListScreen(pokemonList: List<Pokemon>, navController: NavController, modifier: Modifier = Modifier) {
+fun PokemonListScreen(pokemonList: List<Pokemon>, pokemonNavigation: PokemonNavigation, modifier: Modifier = Modifier) {
+    PokemonListScreen(pokemonList, modifier, onItemClick = { pokemonNavigation.navigateToDetail(it.id) })
+}
+
+@Composable
+private fun PokemonListScreen(pokemonList: List<Pokemon>, modifier: Modifier, onItemClick: (Pokemon) -> Unit){
     LazyColumn(
         modifier = modifier
             .padding(16.dp)
             .fillMaxWidth()
     ) {
         items(pokemonList) { pokemon ->
-            PokemonItem(pokemon = pokemon, navController = navController)
+            PokemonItem(pokemon = pokemon, onItemClick = onItemClick)
         }
     }
 }
 
 @Composable
-fun PokemonItem(pokemon: Pokemon, navController: NavController) {
+fun PokemonItem(pokemon: Pokemon, onItemClick: (Pokemon) -> Unit) {
     var isFavorite by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.padding(8.dp)) {
@@ -43,7 +50,7 @@ fun PokemonItem(pokemon: Pokemon, navController: NavController) {
                 .padding(8.dp)
                 .size(128.dp)
                 .clickable {
-                    navController.navigate("pokemonDetail/${pokemon.name}")
+                    onItemClick(pokemon)
                 },
             contentScale = ContentScale.Crop
         )
@@ -62,4 +69,15 @@ fun PokemonItem(pokemon: Pokemon, navController: NavController) {
             }
         }
     }
+}
+
+@Composable
+@Preview
+fun PokemonListScreenPreview() {
+    val samplePokemonList = listOf(
+        Pokemon("Pikachu", "https://pokeapi.co/api/v2/pokemon/25/"),
+        Pokemon("Charmander", "https://pokeapi.co/api/v2/pokemon/4/"),
+        Pokemon("Bulbasaur", "https://pokeapi.co/api/v2/pokemon/1/")
+    )
+    PokemonListScreen(pokemonList = samplePokemonList, pokemonNavigation = PokemonNavigation(rememberNavController()), modifier = Modifier.fillMaxSize())
 }

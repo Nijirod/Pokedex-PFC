@@ -67,4 +67,5 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     kapt(libs.hilt.android.compiler)
     implementation(libs.timber)
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 }
