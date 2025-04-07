@@ -3,14 +3,7 @@ package com.netexlearning.pokemon.data.mapper
 import com.netexlearning.pokemon.Pokemon
 import com.netexlearning.pokemon.PokemonDetail
 import com.netexlearning.pokemon.StatDetail
-import com.netexlearning.pokemon.api.Ability
-import com.netexlearning.pokemon.api.Cries
-import com.netexlearning.pokemon.api.Form
-import com.netexlearning.pokemon.api.PokemonApiResponse
-import com.netexlearning.pokemon.api.PokemonDetailResponse
-import com.netexlearning.pokemon.api.Species
-import com.netexlearning.pokemon.api.Sprites
-import com.netexlearning.pokemon.api.TypeName
+import com.netexlearning.pokemon.api.*
 
 object PokemonMapper {
     fun fromDetailResponse(detailResponse: PokemonDetailResponse): PokemonDetail {
@@ -18,11 +11,11 @@ object PokemonMapper {
             id = detailResponse.id,
             order = detailResponse.order,
             name = detailResponse.name,
-            species = detailResponse.species?.let { Species(it.name,detailResponse.species.url) },
+            species = detailResponse.species?.let { Species(it.name, it.url) },
             types = detailResponse.types?.map { TypeName(it.type.name, it.type.url) },
-            form = detailResponse.form?.let { Form(detailResponse.form.name, it.url) },
+            form = detailResponse.form?.let { Form(it.name, it.url) },
             isDefault = detailResponse.isDefault,
-            cries = detailResponse.cries?.let { Cries(it.latest, detailResponse.cries.legacy) },
+            cries = detailResponse.cries?.let { Cries(it.latest, it.legacy) },
             spritesURLs = Sprites(
                 detailResponse.sprites?.frontDefault,
                 detailResponse.sprites?.backDefault,
@@ -39,12 +32,8 @@ object PokemonMapper {
             height = "${detailResponse.height} m"
         )
     }
-    fun fromApiResponse(apiResponse: PokemonApiResponse): Pokemon? {
-        return apiResponse.name?.let {
-            Pokemon(
-                name = it,
-                url = apiResponse.url
-            )
-        }
+
+    fun fromApiResponse(apiResponse: PokemonApiResponse): List<Pokemon> {
+        return apiResponse.results.map { Pokemon(it.name, it.url) }
     }
 }

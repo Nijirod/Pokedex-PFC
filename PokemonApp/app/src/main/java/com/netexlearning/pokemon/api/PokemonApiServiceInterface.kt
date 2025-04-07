@@ -6,10 +6,8 @@ import retrofit2.http.Path
 interface PokemonApiServiceInterface {
 
     @GET("pokemon")
-    suspend fun getPokemonList(): List<PokemonApiResponse>
+    suspend fun getPokemonList(): PokemonApiResponse
 
     @GET("pokemon/{id}")
     suspend fun getPokemonDetail(@Path("id") id: Int): PokemonDetailResponse
-
-
 }

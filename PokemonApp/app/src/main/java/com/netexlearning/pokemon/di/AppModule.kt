@@ -16,6 +16,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder().build()
+    }
+
+    @Provides
+    @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl("https://pokeapi.co/api/v2/")
@@ -23,11 +29,12 @@ object AppModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+
     @Provides
     @Singleton
-    fun providePokemonApiService(retrofit: Retrofit):
-            PokemonApiServiceInterface {
+    fun providePokemonApiService(retrofit: Retrofit):   PokemonApiServiceInterface {
         return retrofit.create(PokemonApiServiceInterface::class.java)
     }
+
 
 }

@@ -1,6 +1,7 @@
 package com.netexlearning.pokemon.api
 
+import com.netexlearning.pokemon.Pokemon
+
 data class PokemonApiResponse(
-    val name: String?,
-    val url: String?
+    val results: List<Pokemon>
 )
