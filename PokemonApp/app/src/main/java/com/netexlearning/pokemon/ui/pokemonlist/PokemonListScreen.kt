@@ -14,18 +14,32 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.netexlearning.pokemon.Pokemon
 import coil.compose.AsyncImage
 import com.netexlearning.pokemon.ui.navigation.PokemonNavigation
+import com.netexlearning.pokemon.ui.viewmodel.PokemonListViewModel
+import timber.log.Timber
 
 @Composable
-fun PokemonListScreen(pokemonList: List<Pokemon>, pokemonNavigation: PokemonNavigation, modifier: Modifier = Modifier) {
-    PokemonListScreen(pokemonList, modifier, onItemClick = { pokemonNavigation.navigateToDetail(it.id) })
+fun PokemonListScreen(
+    pokemonNavigation: PokemonNavigation,
+    modifier: Modifier = Modifier
+) {
+    val viewModel: PokemonListViewModel = hiltViewModel()
+    val pokemonList by viewModel.pokemonList.collectAsState()
+
+    PokemonListScreen(
+        pokemonList = pokemonList,
+        modifier = modifier,
+        onItemClick = { pokemonNavigation.navigateToDetail(it.id) },
+        onLoadMore = { viewModel.loadNextPage() }
+    )
 }
 
 @Composable
-private fun PokemonListScreen(pokemonList: List<Pokemon>, modifier: Modifier, onItemClick: (Pokemon) -> Unit){
+private fun PokemonListScreen(pokemonList: List<Pokemon>, modifier: Modifier, onItemClick: (Pokemon) -> Unit, onLoadMore: () -> Unit = {}) {
     LazyColumn(
         modifier = modifier
             .padding(16.dp)
@@ -34,6 +48,10 @@ private fun PokemonListScreen(pokemonList: List<Pokemon>, modifier: Modifier, on
         items(pokemonList) { pokemon ->
             PokemonItem(pokemon = pokemon, onItemClick = onItemClick)
         }
+        item { LaunchedEffect(Unit) {
+            Timber.d("Loading more items")
+            onLoadMore()
+        } }
     }
 }
 
@@ -74,10 +92,8 @@ fun PokemonItem(pokemon: Pokemon, onItemClick: (Pokemon) -> Unit) {
 @Composable
 @Preview
 fun PokemonListScreenPreview() {
-    val samplePokemonList = listOf(
-        Pokemon("Pikachu", "https://pokeapi.co/api/v2/pokemon/25/"),
-        Pokemon("Charmander", "https://pokeapi.co/api/v2/pokemon/4/"),
-        Pokemon("Bulbasaur", "https://pokeapi.co/api/v2/pokemon/1/")
+    PokemonListScreen(
+        pokemonNavigation = PokemonNavigation(rememberNavController()),
+        modifier = Modifier.fillMaxSize()
     )
-    PokemonListScreen(pokemonList = samplePokemonList, pokemonNavigation = PokemonNavigation(rememberNavController()), modifier = Modifier.fillMaxSize())
 }

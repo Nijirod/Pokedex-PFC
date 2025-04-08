@@ -16,20 +16,38 @@ object PokemonMapper {
             form = detailResponse.form?.let { Form(it.name, it.url) },
             isDefault = detailResponse.is_default,
             cries = detailResponse.cries?.let { Cries(it.latest, it.legacy) },
-            spritesURLs = Sprites(
-                detailResponse.sprites?.back_default,
-                detailResponse.sprites?.back_female,
-                detailResponse.sprites?.back_shiny,
-                detailResponse.sprites?.back_shiny_female,
-                detailResponse.sprites?.front_default,
-                detailResponse.sprites?.front_female,
-                detailResponse.sprites?.front_shiny,
-                detailResponse.sprites?.front_shiny_female,
-            ),
+            spritesURLs = detailResponse.sprites?.let { mapSprites(it) },
             abilities = detailResponse.abilities?.map { AbilityDetail(it.ability.name, it.ability.url) },
             stats = detailResponse.stats?.map { Stat(it.stat.name, it.effort.toString(), it.base_stat) },
             weight = "${detailResponse.weight} kg",
             height = "${detailResponse.height} m"
+        )
+    }
+
+    private fun mapSprites(sprites: Sprites): Sprites {
+        return Sprites(
+            back_default = sprites.back_default,
+            back_female = sprites.back_female,
+            back_shiny = sprites.back_shiny,
+            back_shiny_female = sprites.back_shiny_female,
+            front_default = sprites.front_default,
+            front_female = sprites.front_female,
+            front_shiny = sprites.front_shiny,
+            front_shiny_female = sprites.front_shiny_female,
+            versions = sprites.versions?.let { mapVersions(it) }
+        )
+    }
+
+    private fun mapVersions(versions: Versions): Versions {
+        return Versions(
+            generation_i = versions.generation_i,
+            generation_ii = versions.generation_ii,
+            generation_iii = versions.generation_iii,
+            generation_iv = versions.generation_iv,
+            generation_v = versions.generation_v,
+            generation_vi = versions.generation_vi,
+            generation_vii = versions.generation_vii,
+            generation_viii = versions.generation_viii
         )
     }
 

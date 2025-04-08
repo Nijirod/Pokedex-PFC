@@ -1,5 +1,15 @@
 package com.netexlearning.pokemon.api
 
+import com.google.gson.annotations.SerializedName
+import com.netexlearning.pokemon.api.generations.GenerationI
+import com.netexlearning.pokemon.api.generations.GenerationII
+import com.netexlearning.pokemon.api.generations.GenerationIII
+import com.netexlearning.pokemon.api.generations.GenerationIV
+import com.netexlearning.pokemon.api.generations.GenerationV
+import com.netexlearning.pokemon.api.generations.GenerationVI
+import com.netexlearning.pokemon.api.generations.GenerationVII
+import com.netexlearning.pokemon.api.generations.GenerationVIII
+
 data class PokemonDetailResponse(
     val id: Int?,
     val order: Int?,
@@ -49,7 +59,19 @@ data class Sprites(
     val front_default: String?,
     val front_female: String?,
     val front_shiny: String?,
-    val front_shiny_female: String?
+    val front_shiny_female: String?,
+    val versions: Versions? = null
+)
+
+data class Versions(
+    @SerializedName("generation-i") val generation_i: GenerationI?,
+    @SerializedName("generation-ii") val generation_ii: GenerationII?,
+    @SerializedName("generation-iii") val generation_iii: GenerationIII?,
+    @SerializedName("generation-iv") val generation_iv: GenerationIV?,
+    @SerializedName("generation-v") val generation_v: GenerationV?,
+    @SerializedName("generation-vi") val generation_vi: GenerationVI?,
+    @SerializedName("generation-vii") val generation_vii: GenerationVII?,
+    @SerializedName("generation-viii") val generation_viii: GenerationVIII?
 )
 
 data class Ability(

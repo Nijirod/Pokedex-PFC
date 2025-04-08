@@ -8,9 +8,9 @@ import javax.inject.Inject
 
 class PokemonRepository @Inject constructor(
     private val apiService: PokemonApiServiceInterface
-){
-    suspend fun getPokemonList(): List<Pokemon> {
-        val apiResponse = apiService.getPokemonList()
+) {
+    suspend fun getPokemonList(limit: Int, offset: Int): List<Pokemon> {
+        val apiResponse = apiService.getPokemonList(limit, offset)
         return PokemonMapper.fromApiResponse(apiResponse)
     }
 

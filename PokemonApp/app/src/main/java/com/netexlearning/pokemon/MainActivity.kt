@@ -32,10 +32,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { paddingValues ->
                     NavHost(navController = navController, startDestination = "pokemonList") {
                         composable("pokemonList") {
-                            val viewModel: PokemonListViewModel = hiltViewModel()
-                            val pokemonList = viewModel.pokemonList.collectAsState().value
                             PokemonListScreen(
-                                pokemonList = pokemonList,
                                 pokemonNavigation = pokemonNavigation,
                                 modifier = Modifier.padding(paddingValues)
                             )
