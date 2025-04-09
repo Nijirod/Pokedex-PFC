@@ -1,4 +1,4 @@
-package com.netexlearning.pokemon.ui.pokemondetail
+package com.netexlearning.pokemon.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState

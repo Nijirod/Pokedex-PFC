@@ -9,10 +9,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.netexlearning.pokemon.ui.pokemonlist.PokemonListScreen
-import com.netexlearning.pokemon.ui.pokemondetail.PokemonDetailScreen
-import com.netexlearning.pokemon.ui.pokemonsearch.SearchScreen
-import com.netexlearning.pokemon.ui.pokemonsettings.SettingsScreen
+import com.netexlearning.pokemon.ui.screens.PokemonListScreen
+import com.netexlearning.pokemon.ui.screens.PokemonDetailScreen
+import com.netexlearning.pokemon.ui.screens.SearchScreen
+import com.netexlearning.pokemon.ui.screens.SettingsScreen
 
 @Composable
 fun RootNav(navController: NavHostController, modifier: Modifier = Modifier) {
