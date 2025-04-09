@@ -70,4 +70,7 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation(libs.androidx.navigation.compose.v277)
     implementation(libs.androidx.material)
+    implementation(libs.material)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.core.splashscreen)
 }

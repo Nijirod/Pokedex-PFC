@@ -4,67 +4,33 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.navArgument
-import com.netexlearning.pokemon.ui.pokemondetail.PokemonDetailScreen
-import com.netexlearning.pokemon.ui.pokemonlist.PokemonListScreen
-import com.netexlearning.pokemon.ui.pokemonsearch.SearchScreen
-import com.netexlearning.pokemon.ui.pokemonsettings.SettingsScreen
+import com.netexlearning.pokemon.R
 
 @Composable
 fun BottomBar(navController: NavHostController) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination
     val items = listOf(
-        ScreenRoutes.PokemonListScreen,
-        ScreenRoutes.SearchScreen,
-        ScreenRoutes.SettingsScreen
+        BottomBarItem(ScreenRoutes.PokemonListScreen.route, R.drawable.ic_pokeball),
+        BottomBarItem(ScreenRoutes.SearchScreen.route, R.drawable.ic_search),
+        BottomBarItem(ScreenRoutes.SettingsScreen.route, R.drawable.ic_settings)
     )
 
     NavigationBar {
-        items.forEach { screen ->
+        items.forEach { item ->
             NavigationBarItem(
-                selected = currentDestination?.route == screen.route,
-                onClick = { navController.navigate(screen.route) },
-                icon = {}
+                selected = currentDestination?.route == item.route,
+                onClick = { navController.navigate(item.route) },
+                icon = { androidx.compose.material3.Icon(painter = painterResource(id = item.icon), contentDescription = null) }
             )
         }
     }
 }
 
-@Composable
-fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifier) {
-    NavHost(
-        navController = navController,
-        startDestination = ScreenRoutes.PokemonListScreen.route,
-        modifier = modifier
-    ) {
-        composable(ScreenRoutes.PokemonListScreen.route) {
-            PokemonListScreen(
-                pokemonNavigation = PokemonNavigation(navController)
-            )
-        }
-        composable(
-            route = "pokemon_detail_screen/{pokemonId}",
-            arguments = listOf(navArgument("pokemonId") { type = NavType.IntType })
-        ) { backStackEntry ->
-            val pokemonId = backStackEntry.arguments?.getInt("pokemonId")
-            if (pokemonId != null) {
-                PokemonDetailScreen(pokemonId = pokemonId)
-            } else {
-                navController.popBackStack()
-            }
-        }
-        composable(ScreenRoutes.SearchScreen.route) {
-            SearchScreen()
-        }
-        composable(ScreenRoutes.SettingsScreen.route) {
-            SettingsScreen()
-        }
-    }
-}
+data class BottomBarItem(
+    val route: String,
+    val icon: Int
+)
