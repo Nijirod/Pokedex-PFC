@@ -33,7 +33,7 @@ fun PokemonListScreen(
     PokemonListScreen(
         pokemonList = pokemonList,
         modifier = modifier,
-        onItemClick = { pokemonNavigation.navigateToDetail(it.id) },
+        onItemClick = { pokemonNavigation.navigateToDetail(it.id.toInt()) },
         onLoadMore = { viewModel.loadNextPage() }
     )
 }

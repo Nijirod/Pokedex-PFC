@@ -3,10 +3,11 @@ package com.netexlearning.pokemon.ui.navigation
 import androidx.navigation.NavController
 
 class PokemonNavigation(private val navController: NavController) {
-    fun navigateToDetail(pokemonId: String) {
-        navController.navigate("pokemonDetail/$pokemonId")
+    fun navigateToDetail(id: Int) {
+        navController.navigate("pokemon_detail_screen/$id")
     }
+
     fun navigateToList() {
-        navController.navigate("pokemonList")
+        navController.navigate(ScreenRoutes.PokemonListScreen.route)
     }
 }

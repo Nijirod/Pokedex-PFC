@@ -28,7 +28,7 @@ fun PokemonDetailScreen(
     val pokemonDetail by viewModel.pokemonDetail.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.fetchPokemonDetail(pokemonId)
+        viewModel.fetchPokemonDetail(pokemonId.toInt())
     }
 
     pokemonDetail?.let { detail ->
@@ -46,7 +46,7 @@ fun PokemonDetailScreen(
             Spacer(modifier = Modifier.height(16.dp))
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(detail.spritesURLs?.versions?.generation_i?.yellow?.front_default)
+                    .data(detail.spritesURLs?.front_shiny)
                     .transformations(ImageResizer(200.dp, 200.dp))
                     .build(),
                 contentDescription = stringResource(R.string.image_of, detail.name ?: ""),

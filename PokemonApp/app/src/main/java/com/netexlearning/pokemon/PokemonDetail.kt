@@ -6,7 +6,6 @@ import com.netexlearning.pokemon.api.Form
 import com.netexlearning.pokemon.api.Species
 import com.netexlearning.pokemon.api.Sprites
 import com.netexlearning.pokemon.api.TypeName
-import com.netexlearning.pokemon.api.Versions
 
 data class PokemonDetail(
     val id: Int?,
