@@ -3,6 +3,8 @@ package com.netexlearning.pokemon.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.netexlearning.pokemon.PokemonDetail
+import com.netexlearning.pokemon.data.mapper.PokemonMapper.toDomain
+import com.netexlearning.pokemon.data.mapper.PokemonMapper.toEntity
 import com.netexlearning.pokemon.data.repository.PokemonRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,8 +21,13 @@ class PokemonDetailViewModel @Inject constructor(
 
     fun fetchPokemonDetail(pokemonId: Int) {
         viewModelScope.launch {
-            val detail = repository.getPokemonDetail(pokemonId)
-            _pokemonDetail.value = detail
+            val apiDetail = repository.getPokemonDetailFromApi(pokemonId)
+
+            repository.insertPokemonDetail(apiDetail.toEntity())
+
+            val detail = repository.getPokemonDetailFromDao(pokemonId)
+
+            _pokemonDetail.value = detail?.toDomain()
         }
     }
 }

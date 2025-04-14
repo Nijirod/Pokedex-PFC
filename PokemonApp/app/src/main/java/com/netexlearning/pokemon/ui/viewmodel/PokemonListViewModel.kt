@@ -29,13 +29,22 @@ class PokemonListViewModel @Inject constructor(private val repository: PokemonRe
             if (isFetching) return@launch
             isFetching = true
             try {
-                val newPokemon = repository.getPokemonList(limit, offset)
-                _pokemonList.value += newPokemon
+                val newPokemon = repository.getPokemonList(limit, offset).mapNotNull { it as? Pokemon }
+                println("New Pokemon Fetched: $newPokemon")
+                _pokemonList.value = _pokemonList.value + newPokemon
                 offset += limit
             } catch (e: Exception) {
                 println("Error fetching Pokémon: ${e.message}")
             }
             isFetching = false
+        }
+    }
+    fun updateFavoriteStatus(pokemon: Pokemon, isFavorite: Boolean) {
+        viewModelScope.launch {
+            repository.updateFavouriteStatus(pokemon.id.toInt(), isFavorite)
+            _pokemonList.value = _pokemonList.value.map {
+                if (it.id == pokemon.id) it.copy(isFavorite = isFavorite) else it
+            }
         }
     }
 

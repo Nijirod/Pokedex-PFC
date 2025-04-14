@@ -4,8 +4,35 @@ import com.netexlearning.pokemon.Pokemon
 import com.netexlearning.pokemon.PokemonDetail
 import com.netexlearning.pokemon.Stat
 import com.netexlearning.pokemon.api.*
+import com.netexlearning.pokemon.data.local.entities.AbilityEntity
+import com.netexlearning.pokemon.data.local.entities.CriesEntity
+import com.netexlearning.pokemon.data.local.entities.FormEntity
+import com.netexlearning.pokemon.data.local.entities.PokemonDetailEntity
+import com.netexlearning.pokemon.data.local.entities.SpeciesEntity
+import com.netexlearning.pokemon.data.local.entities.SpritesEntity
+import com.netexlearning.pokemon.data.local.entities.StatEntity
+import com.netexlearning.pokemon.data.local.entities.TypeEntity
+import com.netexlearning.pokemon.data.local.entities.VersionsSpritesEntity
+import com.netexlearning.pokemon.data.local.entities.generations.GenerationIISpritesEntity
+import com.netexlearning.pokemon.data.local.entities.generations.GenerationISpritesEntity
+import com.netexlearning.pokemon.data.local.entities.generations.GenerationVIISpritesEntity
+import com.netexlearning.pokemon.data.local.entities.generations.GenerationVISpritesEntity
+import com.netexlearning.pokemon.data.local.entities.*
+import com.netexlearning.pokemon.data.local.entities.generations.GenerationIIISpritesEntity
+import com.netexlearning.pokemon.data.local.entities.generations.GenerationIVSpritesEntity
+import com.netexlearning.pokemon.data.local.entities.generations.GenerationVSpritesEntity
 
 object PokemonMapper {
+
+    fun fromApiResponse(apiResponse: PokemonApiResponse): List<Pokemon> {
+        return apiResponse.results.map { result ->
+            Pokemon(
+                name = result.name,
+                url = result.url
+            )
+        }
+    }
+
     fun fromDetailResponse(detailResponse: PokemonDetailResponse): PokemonDetail {
         return PokemonDetail(
             id = detailResponse.id,
@@ -24,6 +51,59 @@ object PokemonMapper {
         )
     }
 
+    fun PokemonDetail.toEntity(): PokemonDetailEntity {
+        return PokemonDetailEntity(
+            id = this.id,
+            name = this.name ?: "",
+            order = this.order ?: 0,
+            species = this.species?.let { SpeciesEntity(it.name, it.url) },
+            types = this.types?.map { TypeEntity(it.name, it.url) } ?: emptyList(),
+            form = this.form?.let { FormEntity(it.name, it.url) },
+            isDefault = this.isDefault ?: false,
+            cries = this.cries?.let { CriesEntity(it.latest, it.legacy) },
+            spritesURLs = this.spritesURLs?.let { mapSpritesToEntity(it) },
+            abilities = this.abilities?.map { AbilityEntity(ability = AbilityDetailEntity(it.name,it.url)) } ?: emptyList(),
+            stats = this.stats?.map { StatEntity(it.name, it.value) } ?: emptyList(),
+            height = this.height,
+            weight = this.weight?.replace(" kg", "")?.toIntOrNull() ?: 0
+        )
+    }
+
+    fun PokemonDetailEntity.toDomain(): PokemonDetail {
+        return PokemonDetail(
+            id = this.id,
+            name = this.name,
+            order = this.order,
+            species = this.species?.let { Species(it.name.toString(), it.url.toString()) },
+            types = this.types?.map { TypeName(it.name, it.url) },
+            form = this.form?.let { Form(it.name.toString(), it.url.toString()) },
+            isDefault = this.isDefault,
+            cries = this.cries?.let { Cries(it.latest.toString(), it.legacy.toString()) },
+            spritesURLs = this.spritesURLs?.let { mapSpritesFromEntity(it) },
+            abilities = this.abilities?.map { AbilityDetail(it.ability.name, it.ability.url) },
+            stats = this.stats?.map { Stat(it.name, "0", it.value) },
+            height = this.height,
+            weight = "${this.weight} kg"
+        )
+    }
+
+    fun fromListEntityToDetailEntity(entity: PokemonListEntity): PokemonDetailEntity {
+            return PokemonDetailEntity(
+                id = entity.id,
+                name = entity.name,
+                order = null,
+                species = null,
+                types = null,
+                form = null,
+                isDefault = null,
+                cries = null,
+                spritesURLs = null,
+                abilities = null,
+                stats = null,
+                height = null,
+                weight = null
+            )
+    }
     private fun mapSprites(sprites: Sprites): Sprites {
         return Sprites(
             back_default = sprites.back_default,
@@ -34,24 +114,54 @@ object PokemonMapper {
             front_female = sprites.front_female,
             front_shiny = sprites.front_shiny,
             front_shiny_female = sprites.front_shiny_female,
-            versions = sprites.versions?.let { mapVersions(it) }
+            versions = sprites.versions 
         )
     }
 
-    private fun mapVersions(versions: Versions): Versions {
-        return Versions(
-            generation_i = versions.generation_i,
-            generation_ii = versions.generation_ii,
-            generation_iii = versions.generation_iii,
-            generation_iv = versions.generation_iv,
-            generation_v = versions.generation_v,
-            generation_vi = versions.generation_vi,
-            generation_vii = versions.generation_vii,
-            generation_viii = versions.generation_viii
+    private fun mapSpritesToEntity(sprites: Sprites): SpritesEntity {
+        return SpritesEntity(
+            frontDefault = sprites.front_default ?: "",
+            backDefault = sprites.back_default ?: "",
+            frontShiny = sprites.front_shiny ?: "",
+            backShiny = sprites.back_shiny ?: "",
+            frontFemale = sprites.front_female ?: "",
+            backFemale = sprites.back_female ?: "",
+            frontShinyFemale = sprites.front_shiny_female ?: "",
+            backShinyFemale = sprites.back_shiny_female ?: "",
+            versions = VersionsSpritesEntity(
+                generationI = GenerationMapper.mapGenerationI(sprites.versions?.generation_i),
+                generationII = GenerationMapper.mapGenerationII(sprites.versions?.generation_ii),
+                generationIII = GenerationMapper.mapGenerationIII(sprites.versions?.generation_iii),
+                generationIV = GenerationMapper.mapGenerationIV(sprites.versions?.generation_iv),
+                generationV = GenerationMapper.mapGenerationV(sprites.versions?.generation_v),
+                generationVI = GenerationMapper.mapGenerationVI(sprites.versions?.generation_vi),
+                generationVII = GenerationMapper.mapGenerationVII(sprites.versions?.generation_vii),
+                generationVIII = GenerationMapper.mapGenerationVIII(sprites.versions?.generation_viii)
+            )
         )
     }
 
-    fun fromApiResponse(apiResponse: PokemonApiResponse): List<Pokemon> {
-        return apiResponse.results.map { Pokemon(it.name, it.url) }
+    private fun mapSpritesFromEntity(spritesEntity: SpritesEntity): Sprites {
+        return Sprites(
+            front_default = spritesEntity.frontDefault,
+            back_default = spritesEntity.backDefault,
+            front_shiny = spritesEntity.frontShiny,
+            back_shiny = spritesEntity.backShiny,
+            front_female = spritesEntity.frontFemale,
+            back_female = spritesEntity.backFemale,
+            front_shiny_female = spritesEntity.frontShinyFemale,
+            back_shiny_female = spritesEntity.backShinyFemale,
+            versions = Versions(
+                generation_i = GenerationMapper.mapGenerationIFromEntity(spritesEntity.versions.generationI),
+                generation_ii = GenerationMapper.mapGenerationIIFromEntity(spritesEntity.versions.generationII),
+                generation_iii = GenerationMapper.mapGenerationIIIFromEntity(spritesEntity.versions.generationIII),
+                generation_iv = GenerationMapper.mapGenerationIVFromEntity(spritesEntity.versions.generationIV),
+                generation_v = GenerationMapper.mapGenerationVFromEntity(spritesEntity.versions.generationV),
+                generation_vi = GenerationMapper.mapGenerationVIFromEntity(spritesEntity.versions.generationVI),
+                generation_vii = GenerationMapper.mapGenerationVIIFromEntity(spritesEntity.versions.generationVII),
+                generation_viii = GenerationMapper.mapGenerationVIIIFromEntity(spritesEntity.versions.generationVIII)
+            )
+        )
     }
+
 }

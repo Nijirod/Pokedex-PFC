@@ -1,0 +1,48 @@
+package com.netexlearning.pokemon.ui.components
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import com.netexlearning.pokemon.Pokemon
+
+@Composable
+fun PokemonItem(
+    pokemon: Pokemon,
+    isFavorite: Boolean,
+    onItemClick: (Pokemon) -> Unit,
+    onFavoriteClick: (Boolean) -> Unit
+) {
+    Column(modifier = Modifier.padding(8.dp)) {
+        Text(text = "Name: ${pokemon.name}")
+        AsyncImage(
+            model = pokemon.urlImage,
+            contentDescription = "Image of ${pokemon.name}",
+            modifier = Modifier
+                .padding(8.dp)
+                .size(128.dp)
+                .clickable { onItemClick(pokemon) },
+            contentScale = ContentScale.Crop
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            IconButton(onClick = { onFavoriteClick(!isFavorite) }) {
+                val icon = if (isFavorite) Icons.Filled.Star else Icons.Outlined.Star
+                val iconColor = if (isFavorite) Color.Yellow else Color.Gray
+                Icon(imageVector = icon, contentDescription = "Favorite", tint = iconColor)
+            }
+        }
+    }
+}

@@ -1,11 +1,11 @@
-package com.netexlearning.pokemon.api.generations
+package com.netexlearning.pokemon.data.local.entities.generations
 
-class GenerationII (
-    val crystal: Crystal?,
-    val gold: Gold?,
-    val silver: Silver?
+data class GenerationIISpritesEntity(
+    val crystal: CrystalSpritesEntity,
+    val gold: BasicShinySpritesEntity,
+    val silver: BasicShinySpritesEntity,
 ){
-    data class Crystal(
+    data class CrystalSpritesEntity(
         val back_default: String?,
         val back_shiny: String?,
         val back_shiny_transparent: String?,
@@ -16,15 +16,7 @@ class GenerationII (
         val front_transparent: String?
     )
 
-    data class Gold(
-        val back_default: String?,
-        val back_shiny: String?,
-        val front_default: String?,
-        val front_shiny: String?,
-        val front_transparent: String?
-    )
-
-    data class Silver(
+    data class BasicShinySpritesEntity(
         val back_default: String?,
         val back_shiny: String?,
         val front_default: String?,

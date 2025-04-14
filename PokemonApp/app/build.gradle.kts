@@ -73,4 +73,10 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.core.splashscreen)
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.room.ktx)
+    implementation(libs.androidx.room.runtime)
+    implementation("androidx.room:room-runtime:2.7.0")
+    kapt("androidx.room:room-compiler:2.7.0")
+    implementation("androidx.room:room-ktx:2.7.0")
 }
