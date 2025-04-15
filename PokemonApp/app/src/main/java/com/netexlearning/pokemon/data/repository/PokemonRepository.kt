@@ -1,12 +1,11 @@
 package com.netexlearning.pokemon.data.repository
 
-import com.netexlearning.pokemon.Pokemon
 import com.netexlearning.pokemon.PokemonDetail
 import com.netexlearning.pokemon.api.PokemonApiServiceInterface
 import com.netexlearning.pokemon.data.local.dao.PokemonDao
 import com.netexlearning.pokemon.data.local.entities.pokemondetail.PokemonDetailEntity
 import com.netexlearning.pokemon.data.local.entities.pokemonlist.PokemonListEntity
-import com.netexlearning.pokemon.data.local.entities.PokemonListWithFavoriteEntity
+import com.netexlearning.pokemon.data.local.entities.views.PokemonListWithFavoriteView
 import com.netexlearning.pokemon.data.local.entities.pokemonfavorite.PokemonFavoriteEntity
 import com.netexlearning.pokemon.data.mapper.PokemonMapper
 import javax.inject.Inject
@@ -50,7 +49,7 @@ class PokemonRepository @Inject constructor(
     }
 
 
-    suspend fun getAllPokemonList(limit: Int, offset: Int): List<PokemonListWithFavoriteEntity> {
+    suspend fun getAllPokemonList(limit: Int, offset: Int): List<PokemonListWithFavoriteView> {
         return pokemonDao.getAllPokemonList(limit, offset)
     }
 
@@ -62,7 +61,7 @@ class PokemonRepository @Inject constructor(
         pokemonDao.insertPokemonDetail(pokemonDetail)
     }
 
-    suspend fun getPokemonByName(name: String): PokemonListWithFavoriteEntity? {
+    suspend fun getPokemonByName(name: String): PokemonListWithFavoriteView? {
         return pokemonDao.getPokemonByName(name)
     }
 }

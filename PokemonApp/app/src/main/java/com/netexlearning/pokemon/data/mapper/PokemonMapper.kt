@@ -18,14 +18,6 @@ import com.netexlearning.pokemon.data.local.entities.pokemonlist.PokemonListEnti
 
 object PokemonMapper {
 
-    fun fromApiResponse(apiResponse: PokemonApiResponse): List<Pokemon> {
-        return apiResponse.results.map { result ->
-            Pokemon(
-                name = result.name,
-                url = result.url
-            )
-        }
-    }
 
     fun fromDetailResponse(detailResponse: PokemonDetailResponse): PokemonDetail {
         return PokemonDetail(
@@ -85,24 +77,6 @@ object PokemonMapper {
             height = this.height,
             weight = "${this.weight} kg"
         )
-    }
-
-    fun fromListEntityToDetailEntity(entity: PokemonListEntity): PokemonDetailEntity {
-            return PokemonDetailEntity(
-                id = entity.id,
-                name = entity.name,
-                order = null,
-                species = null,
-                types = null,
-                form = null,
-                isDefault = null,
-                cries = null,
-                spritesURLs = null,
-                abilities = null,
-                stats = null,
-                height = null,
-                weight = null
-            )
     }
     private fun mapSprites(sprites: Sprites): Sprites {
         return Sprites(

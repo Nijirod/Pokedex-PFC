@@ -23,13 +23,4 @@ import com.netexlearning.pokemon.data.local.entities.pokemonlist.PokemonListEnti
 @TypeConverters(PokemonTypeConverters::class)
 abstract class PokemonDatabase : RoomDatabase() {
     abstract fun pokemonDao(): PokemonDao
-
-    companion object {
-        val MIGRATION_6_7 = object : Migration(6, 7) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                // Renombrar columna isFavourite a isFavorite
-                database.execSQL("ALTER TABLE pokemon_favourite RENAME COLUMN isFavourite TO isFavorite")
-            }
-        }
-    }
 }

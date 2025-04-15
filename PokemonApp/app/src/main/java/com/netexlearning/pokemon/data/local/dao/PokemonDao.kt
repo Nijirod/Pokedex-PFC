@@ -1,7 +1,7 @@
 package com.netexlearning.pokemon.data.local.dao
 
 import androidx.room.*
-import com.netexlearning.pokemon.data.local.entities.PokemonListWithFavoriteEntity
+import com.netexlearning.pokemon.data.local.entities.views.PokemonListWithFavoriteView
 import com.netexlearning.pokemon.data.local.entities.pokemondetail.PokemonDetailEntity
 import com.netexlearning.pokemon.data.local.entities.pokemonfavorite.PokemonFavoriteEntity
 import com.netexlearning.pokemon.data.local.entities.pokemonlist.PokemonListEntity
@@ -26,7 +26,7 @@ interface PokemonDao {
     LEFT JOIN pokemon_favorite ON pokemon_list.id = pokemon_favorite.id
     LIMIT :limit OFFSET :offset
     """)
-    suspend fun getAllPokemonList(limit: Int, offset: Int): List<PokemonListWithFavoriteEntity>
+    suspend fun getAllPokemonList(limit: Int, offset: Int): List<PokemonListWithFavoriteView>
 
     @Query("""
     SELECT
@@ -38,7 +38,7 @@ interface PokemonDao {
     LEFT JOIN pokemon_favorite ON pokemon_list.id = pokemon_favorite.id
     WHERE pokemon_list.name = :name
     """)
-    suspend fun getPokemonByName(name: String): PokemonListWithFavoriteEntity?
+    suspend fun getPokemonByName(name: String): PokemonListWithFavoriteView?
 
     @Query("SELECT * FROM pokemon_list WHERE id = :id")
     suspend fun getPokemonListById(id: Int): PokemonListEntity?

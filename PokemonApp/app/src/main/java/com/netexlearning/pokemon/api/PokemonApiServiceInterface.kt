@@ -1,7 +1,5 @@
 package com.netexlearning.pokemon.api
 
-import com.netexlearning.pokemon.api.PokemonApiResponse
-import com.netexlearning.pokemon.api.PokemonDetailResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

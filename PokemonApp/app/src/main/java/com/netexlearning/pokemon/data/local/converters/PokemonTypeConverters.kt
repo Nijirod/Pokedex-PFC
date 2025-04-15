@@ -13,14 +13,6 @@ import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities
 
 class PokemonTypeConverters {
     private val gson = Gson()
-
-    @TypeConverter
-    fun fromStringList(value: List<String>): String = gson.toJson(value)
-
-    @TypeConverter
-    fun toStringList(value: String): List<String> =
-        gson.fromJson(value, object : TypeToken<List<String>>() {}.type)
-
     @TypeConverter
     fun fromStatList(value: List<StatEntity>): String = gson.toJson(value)
 
@@ -53,15 +45,6 @@ class PokemonTypeConverters {
     fun toTypeEntityList(typesJson: String?): List<TypeEntity>? {
         val type = object : TypeToken<List<TypeEntity>>() {}.type
         return gson.fromJson(typesJson, type)
-    }
-
-    @TypeConverter
-    fun fromTypeEntity(type: TypeEntity?): String? {
-        return gson.toJson(type)
-    }
-    @TypeConverter
-    fun toTypeEntity(typeJson: String?): TypeEntity? {
-        return typeJson?.let { gson.fromJson(it, TypeEntity::class.java) }
     }
 
     @TypeConverter
