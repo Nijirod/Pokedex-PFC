@@ -21,13 +21,18 @@ class PokemonDetailViewModel @Inject constructor(
 
     fun fetchPokemonDetail(pokemonId: Int) {
         viewModelScope.launch {
-            val apiDetail = repository.getPokemonDetailFromApi(pokemonId)
-
-            repository.insertPokemonDetail(apiDetail.toEntity())
-
-            val detail = repository.getPokemonDetailFromDao(pokemonId)
-
-            _pokemonDetail.value = detail?.toDomain()
+            try {
+                val detailFromDb = repository.getPokemonDetailFromDao(pokemonId)
+                if (detailFromDb != null) {
+                    _pokemonDetail.value = detailFromDb.toDomain()
+                } else {
+                    val detailFromApi = repository.getPokemonDetailFromApi(pokemonId)
+                    repository.insertPokemonDetail(detailFromApi.toEntity())
+                    _pokemonDetail.value = detailFromApi
+                }
+            } catch (e: Exception) {
+                println("Error obteniendo detalles del Pokémon: ${e.message}")
+            }
         }
     }
 }

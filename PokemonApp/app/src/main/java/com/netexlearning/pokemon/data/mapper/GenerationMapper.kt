@@ -1,9 +1,16 @@
 package com.netexlearning.pokemon.data.mapper
 
 import com.netexlearning.pokemon.api.generations.*
-import com.netexlearning.pokemon.data.local.entities.generations.*
-import com.netexlearning.pokemon.data.local.entities.generations.entities.GenerationVIAndVIIEntity
-import com.netexlearning.pokemon.data.local.entities.generations.entities.IconsEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.generations.GenerationIIISpritesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.generations.GenerationIISpritesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.generations.GenerationISpritesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.generations.GenerationIVSpritesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.generations.GenerationVIIISpritesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.generations.GenerationVIISpritesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.generations.GenerationVISpritesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.generations.GenerationVSpritesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.generations.entities.GenerationVIAndVIIEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.generations.entities.IconsEntity
 
 object GenerationMapper {
 
@@ -258,7 +265,16 @@ object GenerationMapper {
                             front_shiny = animated.front_shiny,
                             front_shiny_female = animated.front_female_shiny
                         )
-                    } ?: GenerationVSpritesEntity.AnimatedSpritesEntity("", "", "", "", "", "", "", ""),
+                    } ?: GenerationVSpritesEntity.AnimatedSpritesEntity(
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        ""
+                    ),
                     back_default = it.back_default,
                     back_female = it.back_female,
                     back_shiny = it.back_shiny,

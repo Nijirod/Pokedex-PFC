@@ -4,23 +4,17 @@ import com.netexlearning.pokemon.Pokemon
 import com.netexlearning.pokemon.PokemonDetail
 import com.netexlearning.pokemon.Stat
 import com.netexlearning.pokemon.api.*
-import com.netexlearning.pokemon.data.local.entities.AbilityEntity
-import com.netexlearning.pokemon.data.local.entities.CriesEntity
-import com.netexlearning.pokemon.data.local.entities.FormEntity
-import com.netexlearning.pokemon.data.local.entities.PokemonDetailEntity
-import com.netexlearning.pokemon.data.local.entities.SpeciesEntity
-import com.netexlearning.pokemon.data.local.entities.SpritesEntity
-import com.netexlearning.pokemon.data.local.entities.StatEntity
-import com.netexlearning.pokemon.data.local.entities.TypeEntity
-import com.netexlearning.pokemon.data.local.entities.VersionsSpritesEntity
-import com.netexlearning.pokemon.data.local.entities.generations.GenerationIISpritesEntity
-import com.netexlearning.pokemon.data.local.entities.generations.GenerationISpritesEntity
-import com.netexlearning.pokemon.data.local.entities.generations.GenerationVIISpritesEntity
-import com.netexlearning.pokemon.data.local.entities.generations.GenerationVISpritesEntity
-import com.netexlearning.pokemon.data.local.entities.*
-import com.netexlearning.pokemon.data.local.entities.generations.GenerationIIISpritesEntity
-import com.netexlearning.pokemon.data.local.entities.generations.GenerationIVSpritesEntity
-import com.netexlearning.pokemon.data.local.entities.generations.GenerationVSpritesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.AbilityEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.CriesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.FormEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.PokemonDetailEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.SpeciesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.SpritesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.StatEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.TypeEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.VersionsSpritesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.AbilityDetailEntity
+import com.netexlearning.pokemon.data.local.entities.pokemonlist.PokemonListEntity
 
 object PokemonMapper {
 
@@ -39,13 +33,15 @@ object PokemonMapper {
             order = detailResponse.order,
             name = detailResponse.name,
             species = detailResponse.species?.let { Species(it.name, it.url) },
-            types = detailResponse.types?.map { TypeName(it.type.name, it.type.url) },
+            types = detailResponse.types?.map { TypeName(it.type?.name, it.type?.url) },
             form = detailResponse.form?.let { Form(it.name, it.url) },
             isDefault = detailResponse.is_default,
             cries = detailResponse.cries?.let { Cries(it.latest, it.legacy) },
             spritesURLs = detailResponse.sprites?.let { mapSprites(it) },
-            abilities = detailResponse.abilities?.map { AbilityDetail(it.ability.name, it.ability.url) },
-            stats = detailResponse.stats?.map { Stat(it.stat.name, it.effort.toString(), it.base_stat) },
+            abilities = detailResponse.abilities?.map { AbilityDetail(it.ability?.name,
+                it.ability?.url
+            ) },
+            stats = detailResponse.stats?.map { Stat(it.stat?.name.toString(), it.effort.toString(), it.base_stat) },
             weight = "${detailResponse.weight} kg",
             height = "${detailResponse.height} m"
         )
@@ -57,15 +53,19 @@ object PokemonMapper {
             name = this.name ?: "",
             order = this.order ?: 0,
             species = this.species?.let { SpeciesEntity(it.name, it.url) },
-            types = this.types?.map { TypeEntity(it.name, it.url) } ?: emptyList(),
+            types = this.types?.map { TypeEntity(it.name.toString(), it.url.toString()) } ?: emptyList(),
             form = this.form?.let { FormEntity(it.name, it.url) },
             isDefault = this.isDefault ?: false,
             cries = this.cries?.let { CriesEntity(it.latest, it.legacy) },
             spritesURLs = this.spritesURLs?.let { mapSpritesToEntity(it) },
-            abilities = this.abilities?.map { AbilityEntity(ability = AbilityDetailEntity(it.name,it.url)) } ?: emptyList(),
+            abilities = this.abilities?.map { AbilityEntity(ability = AbilityDetailEntity(
+                it.name.toString(),
+                it.url.toString()
+            )
+            ) } ?: emptyList(),
             stats = this.stats?.map { StatEntity(it.name, it.value) } ?: emptyList(),
             height = this.height,
-            weight = this.weight?.replace(" kg", "")?.toIntOrNull() ?: 0
+            weight = this.weight?.replace(" kg", "")?.toIntOrNull() ?: 0,
         )
     }
 

@@ -3,13 +3,13 @@ package com.netexlearning.pokemon.data.local.converters
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.netexlearning.pokemon.data.local.entities.AbilityEntity
-import com.netexlearning.pokemon.data.local.entities.CriesEntity
-import com.netexlearning.pokemon.data.local.entities.FormEntity
-import com.netexlearning.pokemon.data.local.entities.SpeciesEntity
-import com.netexlearning.pokemon.data.local.entities.SpritesEntity
-import com.netexlearning.pokemon.data.local.entities.StatEntity
-import com.netexlearning.pokemon.data.local.entities.TypeEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.AbilityEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.CriesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.FormEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.SpeciesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.SpritesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.StatEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.TypeEntity
 
 class PokemonTypeConverters {
     private val gson = Gson()

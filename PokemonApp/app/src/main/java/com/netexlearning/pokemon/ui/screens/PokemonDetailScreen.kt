@@ -88,13 +88,13 @@ fun PokemonDetailScreen(
              style = MaterialTheme.typography.bodyMedium
          )
          Text(
-             text = stringResource(R.string.types, detail.types?.joinToString(", ") { it.name } ?: ""),
+             text = stringResource(R.string.types, detail.types?.joinToString(", ") { it.name.toString() } ?: ""),
              style = MaterialTheme.typography.bodyMedium
          )
          Text(
              text = stringResource(
                  R.string.abilities,
-                 detail.abilities?.joinToString(", ") { it.name } ?: ""
+                 detail.abilities?.joinToString(", ") { it.name.toString() } ?: ""
              ),
              style = MaterialTheme.typography.bodyMedium
          )
@@ -109,8 +109,8 @@ fun PokemonDetailScreen(
                  stats.forEach { stat ->
                      StatBar(
                          statName = stat.name,
-                         value = stat.value.toFloat(),
-                         maxValue = 300f
+                         value = stat.value?.toFloat() ?: 0f ,
+                         maxValue = 255f,
                      )
                  }
              }

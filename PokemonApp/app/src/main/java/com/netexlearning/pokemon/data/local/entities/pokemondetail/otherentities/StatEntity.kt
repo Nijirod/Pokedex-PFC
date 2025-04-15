@@ -2,5 +2,5 @@ package com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentitie
 
 data class StatEntity(
     val name: String,
-    val value: Int
+    val value: Int?
 )

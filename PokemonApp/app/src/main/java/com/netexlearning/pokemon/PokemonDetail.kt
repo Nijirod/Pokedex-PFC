@@ -26,7 +26,7 @@ data class PokemonDetail(
 data class Stat(
     val name: String,
     val effort: String,
-    val value: Int
+    val value: Int?
 )
 
 val samplePokemonDetail = PokemonDetail(

@@ -27,28 +27,28 @@ data class PokemonDetailResponse(
 )
 
 data class Species(
-    val name: String,
-    val url: String
+    val name: String?,
+    val url: String?
 )
 
 data class Type(
-    val slot: Int,
-    val type: TypeName
+    val slot: Int?,
+    val type: TypeName?
 )
 
 data class TypeName(
-    val name: String,
-    val url: String
+    val name: String?,
+    val url: String?
 )
 
 data class Form(
-    val name: String,
-    val url: String
+    val name: String?,
+    val url: String?
 )
 
 data class Cries(
-    val latest: String,
-    val legacy: String
+    val latest: String?,
+    val legacy: String?
 )
 
 data class Sprites(
@@ -75,23 +75,23 @@ data class Versions(
 )
 
 data class Ability(
-    val ability: AbilityDetail,
-    val is_hidden: Boolean,
-    val slot: Int
+    val ability: AbilityDetail?,
+    val is_hidden: Boolean?,
+    val slot: Int?
 )
 
 data class AbilityDetail(
-    val name: String,
-    val url: String
+    val name: String?,
+    val url: String?
 )
 
 data class Stats(
-    val base_stat: Int,
-    val effort: Int,
-    val stat: Stat
+    val base_stat: Int?,
+    val effort: Int?,
+    val stat: Stat?
 )
 
 data class Stat(
-    val name: String,
-    val url: String
+    val name: String?,
+    val url: String?
 )

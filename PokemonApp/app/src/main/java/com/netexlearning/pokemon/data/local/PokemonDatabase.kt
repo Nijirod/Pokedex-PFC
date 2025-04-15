@@ -3,13 +3,33 @@ package com.netexlearning.pokemon.data.local
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.netexlearning.pokemon.data.local.converters.PokemonTypeConverters
 import com.netexlearning.pokemon.data.local.dao.PokemonDao
-import com.netexlearning.pokemon.data.local.entities.PokemonDetailEntity
-import com.netexlearning.pokemon.data.local.entities.PokemonListEntity
+import com.netexlearning.pokemon.data.local.entities.pokemonfavorite.PokemonFavoriteEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.PokemonDetailEntity
+import com.netexlearning.pokemon.data.local.entities.pokemonlist.PokemonListEntity
 
-@Database(entities = [PokemonDetailEntity::class, PokemonListEntity::class], version = 2, exportSchema = false)
+@Database(
+    entities = [
+        PokemonDetailEntity::class,
+        PokemonListEntity::class,
+        PokemonFavoriteEntity::class
+    ],
+    version = 7,
+    exportSchema = false
+)
 @TypeConverters(PokemonTypeConverters::class)
 abstract class PokemonDatabase : RoomDatabase() {
     abstract fun pokemonDao(): PokemonDao
+
+    companion object {
+        val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Renombrar columna isFavourite a isFavorite
+                database.execSQL("ALTER TABLE pokemon_favourite RENAME COLUMN isFavourite TO isFavorite")
+            }
+        }
+    }
 }
