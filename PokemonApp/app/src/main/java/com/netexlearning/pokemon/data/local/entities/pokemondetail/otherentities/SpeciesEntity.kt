@@ -1,4 +1,4 @@
-package com.netexlearning.pokemon.data.local.entities
+package com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities
 
 class SpeciesEntity (
     val name: String? = null,

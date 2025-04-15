@@ -1,4 +1,4 @@
-package com.netexlearning.pokemon.data.local.entities
+package com.netexlearning.pokemon.data.local.entities.pokemonlist
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -7,5 +7,5 @@ import androidx.room.PrimaryKey
 data class PokemonListEntity(
     @PrimaryKey val id: Int,
     val name: String,
-    val isFavourite: Boolean = false
+    val url: String?
 )

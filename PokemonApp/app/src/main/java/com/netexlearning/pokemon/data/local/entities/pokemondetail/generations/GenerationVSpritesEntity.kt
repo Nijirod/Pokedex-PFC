@@ -1,4 +1,4 @@
-package com.netexlearning.pokemon.data.local.entities.generations
+package com.netexlearning.pokemon.data.local.entities.pokemondetail.generations
 
 data class GenerationVSpritesEntity(
     val black_white: BlackWhiteSpritesEntity,

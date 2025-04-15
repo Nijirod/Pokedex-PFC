@@ -1,4 +1,4 @@
-package com.netexlearning.pokemon.data.local.entities
+package com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities
 
 data class SpritesEntity(
     val frontDefault: String,
