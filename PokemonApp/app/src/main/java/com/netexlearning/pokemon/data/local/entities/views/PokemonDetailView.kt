@@ -1,7 +1,6 @@
 package com.netexlearning.pokemon.data.local.entities.views
 
 import androidx.room.Relation
-import com.netexlearning.pokemon.data.local.entities.pokemondetail.PokemonDetailEntity
 import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.AbilityEntity
 import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.CriesEntity
 import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.FormEntity

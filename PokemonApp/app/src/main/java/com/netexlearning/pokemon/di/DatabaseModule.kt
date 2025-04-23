@@ -2,8 +2,6 @@ package com.netexlearning.pokemon.di
 
 import android.content.Context
 import androidx.room.Room
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.netexlearning.pokemon.data.local.PokemonDatabase
 import com.netexlearning.pokemon.data.local.dao.PokemonDao
 import dagger.Module

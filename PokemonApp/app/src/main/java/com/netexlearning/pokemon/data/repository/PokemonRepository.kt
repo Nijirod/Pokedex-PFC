@@ -3,7 +3,6 @@ package com.netexlearning.pokemon.data.repository
 import com.netexlearning.pokemon.PokemonDetail
 import com.netexlearning.pokemon.api.PokemonApiServiceInterface
 import com.netexlearning.pokemon.data.local.dao.PokemonDao
-import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.SpritesEntity
 import com.netexlearning.pokemon.data.local.entities.pokemonlist.PokemonListEntity
 import com.netexlearning.pokemon.data.local.entities.views.PokemonListWithFavoriteView
 import com.netexlearning.pokemon.data.local.entities.pokemonfavorite.PokemonFavoriteEntity

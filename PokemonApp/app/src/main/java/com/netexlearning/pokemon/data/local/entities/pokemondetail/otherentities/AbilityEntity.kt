@@ -1,7 +1,6 @@
 package com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
 @Entity(tableName = "pokemon_ability", primaryKeys = ["pokemonId", "name"])
 data class AbilityEntity(
