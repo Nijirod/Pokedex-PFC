@@ -1,6 +1,6 @@
 package com.netexlearning.pokemon
 
-data class Pokemon(
+data class PokemonList(
     val name: String,
     val url: String?,
     val isFavorite: Boolean = false
@@ -9,4 +9,6 @@ data class Pokemon(
         get() = url?.substringAfterLast("pokemon/")?.substringBeforeLast("/") ?: "Unknown"
     val urlImage: String
         get() = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png"
+    val urlIcon: String
+        get() = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-viii/icons/$id.png"
 }

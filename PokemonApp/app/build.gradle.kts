@@ -45,6 +45,7 @@ android {
     buildFeatures {
         compose = true
     }
+
 }
 
 dependencies {
@@ -84,5 +85,6 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.runtime)
     kapt("androidx.room:room-compiler:2.7.0")
-    implementation(libs.androidx.room.ktx)
+    implementation( libs.androidx.room.ktx)
+    implementation (libs.kotlin.reflect)
 }

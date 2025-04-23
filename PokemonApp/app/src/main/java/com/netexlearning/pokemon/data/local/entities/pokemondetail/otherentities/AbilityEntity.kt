@@ -1,5 +1,11 @@
 package com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities
 
-class AbilityEntity(
-    val ability: AbilityDetailEntity,
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "pokemon_ability", primaryKeys = ["pokemonId", "name"])
+data class AbilityEntity(
+    val pokemonId: Int,
+    val name: String,
+    val url: String,
 )

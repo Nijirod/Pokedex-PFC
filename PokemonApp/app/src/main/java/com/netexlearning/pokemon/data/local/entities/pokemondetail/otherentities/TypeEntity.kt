@@ -1,6 +1,10 @@
 package com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities
 
-class TypeEntity(
+import androidx.room.Entity
+
+@Entity(tableName = "pokemon_type", primaryKeys = ["pokemonId", "name"])
+data class TypeEntity(
+    val pokemonId: Int,
     val name: String,
-    val url: String,
+    val url: String?,
 )

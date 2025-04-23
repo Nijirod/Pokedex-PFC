@@ -1,141 +1,230 @@
 package com.netexlearning.pokemon.data.mapper
 
-import com.netexlearning.pokemon.Pokemon
 import com.netexlearning.pokemon.PokemonDetail
 import com.netexlearning.pokemon.Stat
 import com.netexlearning.pokemon.api.*
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.PokemonDetailEntity
 import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.AbilityEntity
 import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.CriesEntity
 import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.FormEntity
-import com.netexlearning.pokemon.data.local.entities.pokemondetail.PokemonDetailEntity
-import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.SpeciesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.Generation
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.SpriteType
 import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.SpritesEntity
 import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.StatEntity
 import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.TypeEntity
-import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.VersionsSpritesEntity
-import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.AbilityDetailEntity
-import com.netexlearning.pokemon.data.local.entities.pokemonlist.PokemonListEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.Game
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.PokemonDetailEntities
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.SpeciesEntity
+import com.netexlearning.pokemon.data.local.entities.views.PokemonDetailView
+import com.netexlearning.pokemon.data.mapper.interfaces.IGame
+import com.netexlearning.pokemon.data.mapper.interfaces.IGeneration
+import kotlin.reflect.KProperty1
+
 
 object PokemonMapper {
 
-
-    fun fromDetailResponse(detailResponse: PokemonDetailResponse): PokemonDetail {
-        return PokemonDetail(
+    fun fromResponseToEntities(detailResponse: PokemonDetailResponse): PokemonDetailEntities {
+        val detailEntity = PokemonDetailEntity(
             id = detailResponse.id,
-            order = detailResponse.order,
-            name = detailResponse.name,
-            species = detailResponse.species?.let { Species(it.name, it.url) },
-            types = detailResponse.types?.map { TypeName(it.type?.name, it.type?.url) },
-            form = detailResponse.form?.let { Form(it.name, it.url) },
+            name = detailResponse.name.orEmpty(),
+            pokemonOrder = detailResponse.order,
             isDefault = detailResponse.is_default,
-            cries = detailResponse.cries?.let { Cries(it.latest, it.legacy) },
-            spritesURLs = detailResponse.sprites?.let { mapSprites(it) },
-            abilities = detailResponse.abilities?.map { AbilityDetail(it.ability?.name,
-                it.ability?.url
-            ) },
-            stats = detailResponse.stats?.map { Stat(it.stat?.name.toString(), it.effort.toString(), it.base_stat) },
-            weight = "${detailResponse.weight} kg",
-            height = "${detailResponse.height} m"
+            height = (detailResponse.height ?: 0).toString(),
+            weight = detailResponse.weight ?: 0
+        )
+
+        val speciesEntity = detailResponse.species?.let {
+            SpeciesEntity(
+                pokemonId = detailResponse.id ?: 0,
+                name = it.name.orEmpty(),
+                url = it.url.orEmpty()
+            )
+        }
+
+        val abilities = detailResponse.abilities?.map {
+            AbilityEntity(
+                pokemonId = detailResponse.id ?: 0,
+                name = it.ability?.name.orEmpty(),
+                url = it.ability?.url.orEmpty()
+            )
+        } ?: emptyList()
+
+        val types = detailResponse.types?.map {
+            TypeEntity(
+                pokemonId = detailResponse.id ?: 0,
+                name = it.type?.name.orEmpty(),
+                url = it.type?.url.orEmpty()
+            )
+        } ?: emptyList()
+
+        val criesEntity = detailResponse.cries?.let {
+            CriesEntity(
+                pokemonId = detailResponse.id ?: 0,
+                latest = it.latest.orEmpty(),
+                legacy = it.legacy.orEmpty()
+            )
+        }
+
+        val formEntity = detailResponse.form?.let {
+            FormEntity(
+                pokemonId = detailResponse.id ?: 0,
+                name = it.name.orEmpty(),
+                url = it.url.orEmpty()
+            )
+        }
+        val stats = detailResponse.stats?.map {
+            StatEntity(
+                pokemonId = detailResponse.id ?: 0,
+                name = it.stat?.name.orEmpty(),
+                value = it.base_stat ?: 0
+            )
+        } ?: emptyList()
+
+        val sprites = convertToSpriteEntity(detailResponse)
+
+        return PokemonDetailEntities(
+            detailEntity = detailEntity,
+            speciesEntity = speciesEntity,
+            abilities = abilities,
+            types = types,
+            criesEntity = criesEntity,
+            formEntity = formEntity,
+            sprites = sprites,
+            stats = stats
         )
     }
 
     fun PokemonDetail.toEntity(): PokemonDetailEntity {
         return PokemonDetailEntity(
             id = this.id,
-            name = this.name ?: "",
-            order = this.order ?: 0,
-            species = this.species?.let { SpeciesEntity(it.name, it.url) },
-            types = this.types?.map { TypeEntity(it.name.toString(), it.url.toString()) } ?: emptyList(),
-            form = this.form?.let { FormEntity(it.name, it.url) },
-            isDefault = this.isDefault ?: false,
-            cries = this.cries?.let { CriesEntity(it.latest, it.legacy) },
-            spritesURLs = this.spritesURLs?.let { mapSpritesToEntity(it) },
-            abilities = this.abilities?.map { AbilityEntity(ability = AbilityDetailEntity(
-                it.name.toString(),
-                it.url.toString()
-            )
-            ) } ?: emptyList(),
-            stats = this.stats?.map { StatEntity(it.name, it.value) } ?: emptyList(),
-            height = this.height,
-            weight = this.weight?.replace(" kg", "")?.toIntOrNull() ?: 0,
+            name = this.name,
+            pokemonOrder = this.order,
+            isDefault = this.isDefault,
+            height = (this.height?.replace(" m", "")?.toIntOrNull() ?: 0).toString(),
+            weight = this.weight?.replace(" kg", "")?.toIntOrNull() ?: 0
         )
     }
-
-    fun PokemonDetailEntity.toDomain(): PokemonDetail {
+    fun PokemonDetailView.toDomain(): PokemonDetail {
         return PokemonDetail(
             id = this.id,
+            order = this.order ?: 0,
             name = this.name,
-            order = this.order,
-            species = this.species?.let { Species(it.name.toString(), it.url.toString()) },
-            types = this.types?.map { TypeName(it.name, it.url) },
-            form = this.form?.let { Form(it.name.toString(), it.url.toString()) },
-            isDefault = this.isDefault,
-            cries = this.cries?.let { Cries(it.latest.toString(), it.legacy.toString()) },
-            spritesURLs = this.spritesURLs?.let { mapSpritesFromEntity(it) },
-            abilities = this.abilities?.map { AbilityDetail(it.ability.name, it.ability.url) },
-            stats = this.stats?.map { Stat(it.name, "0", it.value) },
-            height = this.height,
-            weight = "${this.weight} kg"
-        )
-    }
-    private fun mapSprites(sprites: Sprites): Sprites {
-        return Sprites(
-            back_default = sprites.back_default,
-            back_female = sprites.back_female,
-            back_shiny = sprites.back_shiny,
-            back_shiny_female = sprites.back_shiny_female,
-            front_default = sprites.front_default,
-            front_female = sprites.front_female,
-            front_shiny = sprites.front_shiny,
-            front_shiny_female = sprites.front_shiny_female,
-            versions = sprites.versions 
+            species = this.species?.let { Species(it.name.orEmpty(), it.url.orEmpty()) } ?: Species("", ""),
+            types = this.types?.map { TypeName(it.name.orEmpty(), it.url.orEmpty()) } ?: emptyList(),
+            form = this.form?.let { Form(it.name.orEmpty(), it.url.orEmpty()) } ?: Form("", ""),
+            isDefault = this.isDefault ?: false,
+            cries = this.cries?.let { Cries(it.latest.orEmpty(), it.legacy.orEmpty()) } ?: Cries("", ""),
+            sprites = this.sprites?.let { mapSpritesToDomain(it) },
+            abilities = this.abilities?.map { ability ->
+                AbilityDetail(
+                    name = ability.name,
+                    url = ability.url
+                )
+            } ?: emptyList(),
+            stats = this.stats?.map { stat ->
+                Stat(stat.name, stat.value)
+            } ?: emptyList(),
+            weight = "${this.weight ?: 0} kg",
+            height = "${this.height ?: 0} m"
         )
     }
 
-    private fun mapSpritesToEntity(sprites: Sprites): SpritesEntity {
-        return SpritesEntity(
-            frontDefault = sprites.front_default ?: "",
-            backDefault = sprites.back_default ?: "",
-            frontShiny = sprites.front_shiny ?: "",
-            backShiny = sprites.back_shiny ?: "",
-            frontFemale = sprites.front_female ?: "",
-            backFemale = sprites.back_female ?: "",
-            frontShinyFemale = sprites.front_shiny_female ?: "",
-            backShinyFemale = sprites.back_shiny_female ?: "",
-            versions = VersionsSpritesEntity(
-                generationI = GenerationMapper.mapGenerationI(sprites.versions?.generation_i),
-                generationII = GenerationMapper.mapGenerationII(sprites.versions?.generation_ii),
-                generationIII = GenerationMapper.mapGenerationIII(sprites.versions?.generation_iii),
-                generationIV = GenerationMapper.mapGenerationIV(sprites.versions?.generation_iv),
-                generationV = GenerationMapper.mapGenerationV(sprites.versions?.generation_v),
-                generationVI = GenerationMapper.mapGenerationVI(sprites.versions?.generation_vi),
-                generationVII = GenerationMapper.mapGenerationVII(sprites.versions?.generation_vii),
-                generationVIII = GenerationMapper.mapGenerationVIII(sprites.versions?.generation_viii)
-            )
+    private fun mapSpritesToDomain(sprites: List<SpritesEntity>?): List<SpritesEntity> {
+        return sprites ?: emptyList()
+    }
+
+    private fun convertToSpriteEntity(detailResponse: PokemonDetailResponse): List<SpritesEntity> {
+        val spriteEntities = mutableListOf<SpritesEntity>()
+
+        detailResponse.sprites?.let {
+            for (property in it::class.members) {
+                if (property is KProperty1<*, *> && property.returnType.classifier == String::class) {
+                    val url = property.call(it) as? String
+                    if (!url.isNullOrEmpty()) {
+                        try {
+                            val spriteType = SpriteType.valueOf(property.name.uppercase())
+                            spriteEntities.add(
+                                SpritesEntity(
+                                    pokemonId = detailResponse.id ?: 0,
+                                    generation = Generation.NONE,
+                                    type = spriteType,
+                                    game = Game.NONE,
+                                    url = url
+                                )
+                            )
+                        } catch (e: IllegalArgumentException) {
+                        }
+                    }
+                }
+            }
+        }
+
+        detailResponse.sprites?.versions?.let { versions ->
+            Generation.entries.forEach { generation ->
+                val generationData = versions::class.members.find { it.name == generation.jsonKey }?.call(versions)
+                if (generationData != null && (generationData is IGeneration || generationData is String)) {
+                    getGames(generationData, spriteEntities, detailResponse, generation)
+                }
+            }
+        }
+        println("Total de sprites procesados: ${spriteEntities.size}")
+        println(spriteEntities)
+        return spriteEntities
+    }
+
+    private fun getGames(
+        generationData: Any,
+        spriteEntities: MutableList<SpritesEntity>,
+        detailResponse: PokemonDetailResponse,
+        generation: Generation
+    ) {
+        if (generationData is IGeneration || generationData is String) {
+            Game.entries.forEach { game ->
+                val gameData = generationData::class.members.find { it.name == game.jsonKey }?.call(generationData)
+                if (gameData != null && (gameData is IGame || gameData is String)) {
+                    spriteEntities.addAll(getSprites(gameData, detailResponse, generation, game))
+                }
+            }
+        }
+    }
+
+    private fun getSprites(
+        gameData: Any,
+        detailResponse: PokemonDetailResponse,
+        generation: Generation,
+        game: Game
+    ): List<SpritesEntity> {
+        val spriteEntities = mutableListOf<SpritesEntity>()
+
+        if (gameData is IGame || gameData is String) {
+            SpriteType.entries.forEach { spriteType ->
+                val url = gameData::class.members.find { it.name == spriteType.jsonKey }
+                    ?.call(gameData) as? String
+                if (!url.isNullOrEmpty()) {
+                    spriteEntities.add(
+                        SpritesEntity(
+                            pokemonId = detailResponse.id ?: 0,
+                            generation = generation,
+                            game = game,
+                            type = spriteType,
+                            url = url
+                        )
+                    )
+                }
+            }
+        }
+        return spriteEntities
+    }
+
+    private fun normalizeSpriteEntity(sprite: SpritesEntity): SpritesEntity {
+        return sprite.copy(
+            generation = Generation.entries.find { it.name == sprite.generation.name } ?: Generation.NONE,
+            game = Game.entries.find { it.name == sprite.game.name } ?: Game.NONE,
+            type = sprite.type
         )
     }
 
-    private fun mapSpritesFromEntity(spritesEntity: SpritesEntity): Sprites {
-        return Sprites(
-            front_default = spritesEntity.frontDefault,
-            back_default = spritesEntity.backDefault,
-            front_shiny = spritesEntity.frontShiny,
-            back_shiny = spritesEntity.backShiny,
-            front_female = spritesEntity.frontFemale,
-            back_female = spritesEntity.backFemale,
-            front_shiny_female = spritesEntity.frontShinyFemale,
-            back_shiny_female = spritesEntity.backShinyFemale,
-            versions = Versions(
-                generation_i = GenerationMapper.mapGenerationIFromEntity(spritesEntity.versions.generationI),
-                generation_ii = GenerationMapper.mapGenerationIIFromEntity(spritesEntity.versions.generationII),
-                generation_iii = GenerationMapper.mapGenerationIIIFromEntity(spritesEntity.versions.generationIII),
-                generation_iv = GenerationMapper.mapGenerationIVFromEntity(spritesEntity.versions.generationIV),
-                generation_v = GenerationMapper.mapGenerationVFromEntity(spritesEntity.versions.generationV),
-                generation_vi = GenerationMapper.mapGenerationVIFromEntity(spritesEntity.versions.generationVI),
-                generation_vii = GenerationMapper.mapGenerationVIIFromEntity(spritesEntity.versions.generationVII),
-                generation_viii = GenerationMapper.mapGenerationVIIIFromEntity(spritesEntity.versions.generationVIII)
-            )
-        )
+     fun normalizeSprites(sprites: List<SpritesEntity>): List<SpritesEntity> {
+        return sprites.map { normalizeSpriteEntity(it) }
     }
-
 }

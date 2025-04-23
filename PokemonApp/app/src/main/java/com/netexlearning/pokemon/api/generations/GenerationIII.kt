@@ -1,27 +1,24 @@
 package com.netexlearning.pokemon.api.generations
 
+import com.google.gson.annotations.SerializedName
+import com.netexlearning.pokemon.data.mapper.interfaces.IGame
+import com.netexlearning.pokemon.data.mapper.interfaces.IGeneration
+
 class GenerationIII(
-    val emerald: Emerald?,
-    val firered_leafgreen: FireredLeafgreen?,
-    val ruby_sapphire: RubySapphire?
-) {
-    data class Emerald(
+    val emerald: EmeraldSprites?,
+    @SerializedName("firered-leafgreen") val firered_leafgreen: IIIGenerationSprites?,
+    @SerializedName("ruby-sapphire") val ruby_sapphire: IIIGenerationSprites?
+): IGeneration  {
+    data class EmeraldSprites(
         val front_default: String?,
         val front_shiny: String?
-    )
+    ): IGame
 
-    data class FireredLeafgreen(
+    data class IIIGenerationSprites(
         val back_default: String?,
         val back_shiny: String?,
         val front_default: String?,
         val front_shiny: String?
-    )
-
-    data class RubySapphire(
-        val back_default: String?,
-        val back_shiny: String?,
-        val front_default: String?,
-        val front_shiny: String?
-    )
+    ): IGame
 
 }

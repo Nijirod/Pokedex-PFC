@@ -7,6 +7,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -17,6 +18,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.netexlearning.pokemon.PokemonDetail
 import com.netexlearning.pokemon.R
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.SpriteType
 import com.netexlearning.pokemon.ui.components.StatBar
 import com.netexlearning.pokemon.ui.viewmodel.PokemonDetailViewModel
 import com.netexlearning.pokemon.utils.ImageResizer
@@ -42,7 +44,6 @@ fun PokemonDetailScreen(
         )
     }
 }
-
  @Composable
  private fun PokemonDetailContent(
      detail: PokemonDetail,
@@ -54,7 +55,8 @@ fun PokemonDetailScreen(
              .padding(16.dp)
              .verticalScroll(scrollState)
              .fillMaxWidth(),
-         verticalArrangement = Arrangement.spacedBy(8.dp)
+         verticalArrangement = Arrangement.spacedBy(8.dp),
+         horizontalAlignment = Alignment.CenterHorizontally
      ) {
          Text(
              text = stringResource(R.string.id, detail.id ?: ""),
@@ -70,20 +72,30 @@ fun PokemonDetailScreen(
          )
 
          Spacer(modifier = Modifier.height(16.dp))
-         AsyncImage(
-             model = ImageRequest.Builder(LocalContext.current)
-                 .data(detail.spritesURLs?.front_default)
-                 .transformations(ImageResizer(200.dp, 200.dp))
-                 .build(),
-             contentDescription = stringResource(R.string.image_of, detail.name ?: ""),
-             modifier = Modifier
-                 .padding(8.dp)
-                 .size(128.dp)
-         )
+
+         detail.sprites
+             ?.filter { it.type == SpriteType.FRONT_DEFAULT }
+             ?.forEach { sprite ->
+                 AsyncImage(
+                     model = ImageRequest.Builder(LocalContext.current)
+                         .data(sprite.url)
+                         .transformations(ImageResizer(200.dp, 200.dp))
+                         .build(),
+                     contentDescription = stringResource(R.string.image_of, detail.name ?: ""),
+                     modifier = Modifier
+                         .padding(8.dp)
+                         .size(128.dp)
+                         .align(Alignment.CenterHorizontally),
+                 )
+                    Text(
+                        text = stringResource(R.string.image_of,sprite.game.name),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+             }
 
          Spacer(modifier = Modifier.height(16.dp))
          Text(
-             text = stringResource(R.string.species, detail.species?.name ?: ""),
+             text = stringResource(R.string.species, detail.species.name ?: ""),
              style = MaterialTheme.typography.bodyMedium
          )
          Text(
@@ -107,8 +119,8 @@ fun PokemonDetailScreen(
              ) {
                  stats.forEach { stat ->
                      StatBar(
-                         statName = stat.name,
-                         value = stat.value?.toFloat() ?: 0f ,
+                         statName = stat.name.toString(),
+                         value = stat.value?.toFloat() ?: 0f,
                          maxValue = 255f,
                      )
                  }

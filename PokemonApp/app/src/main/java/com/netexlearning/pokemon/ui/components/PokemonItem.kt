@@ -14,13 +14,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.netexlearning.pokemon.Pokemon
+import com.netexlearning.pokemon.PokemonList
 
 @Composable
 fun PokemonItem(
-    pokemon: Pokemon,
+    pokemon: PokemonList,
     isFavorite: Boolean,
-    onItemClick: (Pokemon) -> Unit,
+    onItemClick: (PokemonList) -> Unit,
     onFavoriteClick: (Boolean) -> Unit
 ) {
     Column(modifier = Modifier.padding(8.dp)) {

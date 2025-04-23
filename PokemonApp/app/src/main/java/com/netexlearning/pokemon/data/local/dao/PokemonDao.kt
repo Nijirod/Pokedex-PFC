@@ -3,17 +3,48 @@ package com.netexlearning.pokemon.data.local.dao
 import androidx.room.*
 import com.netexlearning.pokemon.data.local.entities.views.PokemonListWithFavoriteView
 import com.netexlearning.pokemon.data.local.entities.pokemondetail.PokemonDetailEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.AbilityEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.CriesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.FormEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.SpeciesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.SpriteType
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.SpritesEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.StatEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.TypeEntity
 import com.netexlearning.pokemon.data.local.entities.pokemonfavorite.PokemonFavoriteEntity
 import com.netexlearning.pokemon.data.local.entities.pokemonlist.PokemonListEntity
+import com.netexlearning.pokemon.data.local.entities.views.PokemonDetailView
 
 @Dao
 interface PokemonDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPokemonDetail(pokemonDetail: PokemonDetailEntity)
+    suspend fun insertPokemonDetailEntity(detailEntity: PokemonDetailEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSpeciesEntity(speciesEntity: SpeciesEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSpritesEntity(spritesEntity: SpritesEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAbilityEntity(abilityEntity: AbilityEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTypeEntity(typeEntity: TypeEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCriesEntity(criesEntity: CriesEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertFormEntity(formEntity: FormEntity)
+    
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertStatEntity(statEntity: StatEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPokemonList(pokemonList: List<PokemonListEntity>)
+    
 
 
     @Query("""
@@ -43,8 +74,41 @@ interface PokemonDao {
     @Query("SELECT * FROM pokemon_list WHERE id = :id")
     suspend fun getPokemonListById(id: Int): PokemonListEntity?
 
-    @Query("SELECT * FROM pokemon_detail WHERE id = :id")
-    suspend fun getPokemonDetailById(id: Int): PokemonDetailEntity?
+    @Query(
+        """
+    SELECT 
+        pd.id AS id,
+        pd.name AS name,
+        pd.pokemonOrder AS `order`,
+        pd.isDefault AS isDefault,
+        pd.height AS height,
+        pd.weight AS weight,
+        s.name AS speciesName,
+        s.url AS speciesUrl,
+        GROUP_CONCAT(t.name, ',') AS typeNames,
+        GROUP_CONCAT(t.url, ',') AS typeUrls,
+        GROUP_CONCAT(a.name, ',') AS abilityNames,
+        GROUP_CONCAT(a.url, ',') AS abilityUrls,
+        c.latest AS criesLatest,
+        c.legacy AS criesLegacy,
+        (
+            SELECT GROUP_CONCAT(sp.url || ':' || sp.type, ',')
+            FROM pokemon_sprites sp
+            WHERE sp.pokemonId = pd.id
+        ) AS sprites,
+        f.name AS formName,
+        f.url AS formUrl
+    FROM pokemon_detail pd
+    LEFT JOIN pokemon_species s ON pd.id = s.pokemonId
+    LEFT JOIN pokemon_type t ON pd.id = t.pokemonId
+    LEFT JOIN pokemon_ability a ON pd.id = a.pokemonId
+    LEFT JOIN pokemon_cries c ON pd.id = c.pokemonId
+    LEFT JOIN form f ON pd.id = f.pokemonId
+    WHERE pd.id = :id
+    GROUP BY pd.id
+    """
+    )
+    suspend fun getPokemonDetailViewById(id: Int): PokemonDetailView?
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -52,4 +116,18 @@ interface PokemonDao {
 
     @Query("DELETE FROM pokemon_favorite WHERE id = :id")
     suspend fun deleteFavorite(id: Int)
+
+    @Query("""
+SELECT * FROM pokemon_sprites
+WHERE pokemonId = :pokemonId AND
+      generation = :generation AND
+      game = :game AND
+      type = :type
+""")
+    suspend fun getSpriteByKeys(
+        pokemonId: Int,
+        generation: String,
+        game: String,
+        type: SpriteType
+    ): SpritesEntity?
 }

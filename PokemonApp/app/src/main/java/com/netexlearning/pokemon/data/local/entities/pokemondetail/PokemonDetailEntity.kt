@@ -4,28 +4,14 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.netexlearning.pokemon.data.local.converters.PokemonTypeConverters
-import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.AbilityEntity
-import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.CriesEntity
-import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.FormEntity
-import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.SpeciesEntity
-import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.SpritesEntity
-import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.StatEntity
-import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.TypeEntity
 
 @Entity(tableName = "pokemon_detail")
 @TypeConverters(PokemonTypeConverters::class)
 data class PokemonDetailEntity(
     @PrimaryKey val id: Int?,
     val name: String?,
-    val order: Int?,
-    val species: SpeciesEntity?,
-    val types: List<TypeEntity>?,
-    val form: FormEntity?,
+    val pokemonOrder: Int?,
     val isDefault: Boolean?,
-    val cries: CriesEntity?,
-    val spritesURLs: SpritesEntity?,
-    val abilities: List<AbilityEntity>?,
-    val stats: List<StatEntity>?,
     val height: String?,
     val weight: Int?,
 )

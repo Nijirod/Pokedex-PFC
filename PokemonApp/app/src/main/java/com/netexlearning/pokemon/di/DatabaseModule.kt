@@ -2,6 +2,8 @@ package com.netexlearning.pokemon.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.netexlearning.pokemon.data.local.PokemonDatabase
 import com.netexlearning.pokemon.data.local.dao.PokemonDao
 import dagger.Module
@@ -14,7 +16,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
-
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): PokemonDatabase {
@@ -23,7 +24,7 @@ object DatabaseModule {
             PokemonDatabase::class.java,
             "pokemon_database"
         )
-            .fallbackToDestructiveMigration(true)
+            .fallbackToDestructiveMigration()
             .build()
     }
 

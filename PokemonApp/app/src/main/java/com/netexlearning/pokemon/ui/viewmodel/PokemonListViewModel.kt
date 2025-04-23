@@ -2,7 +2,7 @@ package com.netexlearning.pokemon.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.netexlearning.pokemon.Pokemon
+import com.netexlearning.pokemon.PokemonList
 import com.netexlearning.pokemon.data.repository.PokemonRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,8 +13,8 @@ import javax.inject.Inject
 @HiltViewModel
 class PokemonListViewModel @Inject constructor(private val repository: PokemonRepository) : ViewModel() {
 
-    private val _pokemonList = MutableStateFlow<List<Pokemon>>(emptyList())
-    val pokemonList: StateFlow<List<Pokemon>> get() = _pokemonList
+    private val _pokemonList = MutableStateFlow<List<PokemonList>>(emptyList())
+    val pokemonList: StateFlow<List<PokemonList>> get() = _pokemonList
 
     private var offset = 0
     private val limit = 10
@@ -30,7 +30,7 @@ class PokemonListViewModel @Inject constructor(private val repository: PokemonRe
                     repository.fetchAndStorePokemonList(limit, offset)
                 }
                 val updatedPokemon = repository.getAllPokemonList(limit, offset)
-                val newPokemon = updatedPokemon.map { Pokemon(it.name, it.url, it.isFavorite) }
+                val newPokemon = updatedPokemon.map { PokemonList(it.name, it.url, it.isFavorite) }
                 _pokemonList.value = _pokemonList.value + newPokemon
                 offset += limit
             } catch (e: Exception) {
@@ -39,12 +39,12 @@ class PokemonListViewModel @Inject constructor(private val repository: PokemonRe
             isFetching = false
         }
     }
-    fun updateFavoriteStatus(pokemon: Pokemon, isFavorite: Boolean) {
+    fun updateFavoriteStatus(pokemonList: PokemonList, isFavorite: Boolean) {
         viewModelScope.launch {
             try {
-                repository.updatePokemonFavoriteStatus(pokemon.name, isFavorite)
+                repository.updatePokemonFavoriteStatus(pokemonList.name, isFavorite)
                 val updatedList = _pokemonList.value.map {
-                    if (it.name == pokemon.name) it.copy(isFavorite = isFavorite) else it
+                    if (it.name == pokemonList.name) it.copy(isFavorite = isFavorite) else it
                 }
                 _pokemonList.value = updatedList
             } catch (e: Exception) {

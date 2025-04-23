@@ -1,11 +1,14 @@
 package com.netexlearning.pokemon.api.generations
 
+import com.netexlearning.pokemon.data.mapper.interfaces.IGame
+import com.netexlearning.pokemon.data.mapper.interfaces.IGeneration
+
 class GenerationII (
-    val crystal: Crystal?,
-    val gold: Gold?,
-    val silver: Silver?
-){
-    data class Crystal(
+    val crystal: CrystalSprites?,
+    val gold: BasicShinySprites?,
+    val silver: BasicShinySprites?
+): IGeneration {
+    data class CrystalSprites(
         val back_default: String?,
         val back_shiny: String?,
         val back_shiny_transparent: String?,
@@ -14,21 +17,13 @@ class GenerationII (
         val front_shiny: String?,
         val front_shiny_transparent: String?,
         val front_transparent: String?
-    )
+    ): IGame
 
-    data class Gold(
+    data class BasicShinySprites(
         val back_default: String?,
         val back_shiny: String?,
         val front_default: String?,
         val front_shiny: String?,
         val front_transparent: String?
-    )
-
-    data class Silver(
-        val back_default: String?,
-        val back_shiny: String?,
-        val front_default: String?,
-        val front_shiny: String?,
-        val front_transparent: String?
-    )
+    ): IGame
 }

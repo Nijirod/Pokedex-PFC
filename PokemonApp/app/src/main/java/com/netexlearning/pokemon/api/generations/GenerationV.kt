@@ -1,11 +1,14 @@
 package com.netexlearning.pokemon.api.generations
 
-class GenerationV(
-    val black_white: BlackWhite?
+import com.google.gson.annotations.SerializedName
+import com.netexlearning.pokemon.data.mapper.interfaces.IGeneration
 
-) {
-    data class BlackWhite(
-        val animated: Animated?,
+class GenerationV(
+    @SerializedName("black-white") val black_white: BlackWhiteSprites?
+
+): IGeneration  {
+    data class BlackWhiteSprites(
+        val animated: AnimatedSprites,
         val back_default: String?,
         val back_female: String?,
         val back_shiny: String?,
@@ -13,9 +16,9 @@ class GenerationV(
         val front_default: String?,
         val front_female: String?,
         val front_shiny: String?,
-        val front_female_shiny: String?
+        val front_shiny_female: String?
     )
-    data class Animated(
+    data class AnimatedSprites(
         val back_default: String?,
         val back_female: String?,
         val back_shiny: String?,
@@ -23,6 +26,6 @@ class GenerationV(
         val front_default: String?,
         val front_female: String?,
         val front_shiny: String?,
-        val front_female_shiny: String?
+        val front_shiny_female: String?
     )
 }

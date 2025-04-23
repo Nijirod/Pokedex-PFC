@@ -1,22 +1,14 @@
 package com.netexlearning.pokemon.api.generations
 
-class GenerationIV(
-    val diamond_pearl: DiamondPearl?,
-    val heartgold_soulsilver: HeartgoldSoulsilver?,
-    val platinum: Platinum?
-) {
-    data class DiamondPearl(
-        val back_default: String?,
-        val back_female: String?,
-        val back_shiny: String?,
-        val back_shiny_female: String?,
-        val front_default: String?,
-        val front_female: String?,
-        val front_shiny: String?,
-        val front_female_shiny: String?
-    )
+import com.google.gson.annotations.SerializedName
+import com.netexlearning.pokemon.data.mapper.interfaces.IGeneration
 
-    data class HeartgoldSoulsilver(
+class GenerationIV(
+    @SerializedName("diamond-pearl") val diamond_pearl: SharedSprites?,
+    @SerializedName("heartgold-soulsilver") val heartgold_soulsilver: SharedSprites?,
+    val platinum: SharedSprites?
+) : IGeneration {
+    data class SharedSprites(
         val back_default: String?,
         val back_female: String?,
         val back_shiny: String?,
@@ -24,16 +16,6 @@ class GenerationIV(
         val front_default: String?,
         val front_female: String?,
         val front_shiny: String?,
-        val front_female_shiny: String?
-    )
-    data class Platinum(
-        val back_default: String?,
-        val back_female: String?,
-        val back_shiny: String?,
-        val back_shiny_female: String?,
-        val front_default: String?,
-        val front_female: String?,
-        val front_shiny: String?,
-        val front_female_shiny: String?
+        val front_shiny_female: String?
     )
 }

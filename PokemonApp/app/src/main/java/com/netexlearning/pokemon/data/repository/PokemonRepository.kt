@@ -3,21 +3,18 @@ package com.netexlearning.pokemon.data.repository
 import com.netexlearning.pokemon.PokemonDetail
 import com.netexlearning.pokemon.api.PokemonApiServiceInterface
 import com.netexlearning.pokemon.data.local.dao.PokemonDao
-import com.netexlearning.pokemon.data.local.entities.pokemondetail.PokemonDetailEntity
+import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.SpritesEntity
 import com.netexlearning.pokemon.data.local.entities.pokemonlist.PokemonListEntity
 import com.netexlearning.pokemon.data.local.entities.views.PokemonListWithFavoriteView
 import com.netexlearning.pokemon.data.local.entities.pokemonfavorite.PokemonFavoriteEntity
 import com.netexlearning.pokemon.data.mapper.PokemonMapper
+import com.netexlearning.pokemon.data.mapper.PokemonMapper.toDomain
 import javax.inject.Inject
 
 class PokemonRepository @Inject constructor(
     private val apiService: PokemonApiServiceInterface,
     private val pokemonDao: PokemonDao
 ) {
-    suspend fun getPokemonDetailFromApi(id: Int): PokemonDetail {
-        val detailResponse = apiService.getPokemonDetail(id)
-        return PokemonMapper.fromDetailResponse(detailResponse)
-    }
 
     suspend fun fetchAndStorePokemonList(limit: Int, offset: Int): List<PokemonListEntity> {
         val apiResponse = apiService.getPokemonList(limit, offset)
@@ -30,6 +27,21 @@ class PokemonRepository @Inject constructor(
         }
         pokemonDao.insertPokemonList(pokemonList)
         return pokemonList
+    }
+
+    suspend fun fetchAndStorePokemonDetailFromApi(id: Int) {
+        val apiResponse = apiService.getPokemonDetail(id)
+        val pokemonDetailEntities = PokemonMapper.fromResponseToEntities(apiResponse)
+
+        pokemonDao.insertPokemonDetailEntity(pokemonDetailEntities.detailEntity)
+        pokemonDetailEntities.speciesEntity?.let { pokemonDao.insertSpeciesEntity(it) }
+        val normalizedSprites = PokemonMapper.normalizeSprites(pokemonDetailEntities.sprites)
+        normalizedSprites.forEach { pokemonDao.insertSpritesEntity(it) }
+        pokemonDetailEntities.abilities.forEach { pokemonDao.insertAbilityEntity(it) }
+        pokemonDetailEntities.types.forEach { pokemonDao.insertTypeEntity(it) }
+        pokemonDetailEntities.criesEntity?.let { pokemonDao.insertCriesEntity(it) }
+        pokemonDetailEntities.formEntity?.let { pokemonDao.insertFormEntity(it) }
+        pokemonDetailEntities.stats.filterNotNull().forEach { pokemonDao.insertStatEntity(it) }
     }
 
 
@@ -53,12 +65,9 @@ class PokemonRepository @Inject constructor(
         return pokemonDao.getAllPokemonList(limit, offset)
     }
 
-    suspend fun getPokemonDetailFromDao(id: Int): PokemonDetailEntity? {
-        return pokemonDao.getPokemonDetailById(id)
-    }
-
-    suspend fun insertPokemonDetail(pokemonDetail: PokemonDetailEntity) {
-        pokemonDao.insertPokemonDetail(pokemonDetail)
+    suspend fun getPokemonDetailFromDao(id: Int): PokemonDetail? {
+        val detailView = pokemonDao.getPokemonDetailViewById(id)
+        return detailView?.toDomain()
     }
 
     suspend fun getPokemonByName(name: String): PokemonListWithFavoriteView? {

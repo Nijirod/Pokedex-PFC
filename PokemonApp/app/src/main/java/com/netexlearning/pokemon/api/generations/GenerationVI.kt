@@ -1,19 +1,23 @@
 package com.netexlearning.pokemon.api.generations
 
+import com.google.gson.annotations.SerializedName
+import com.netexlearning.pokemon.data.mapper.interfaces.IGame
+import com.netexlearning.pokemon.data.mapper.interfaces.IGeneration
+
 class GenerationVI(
-    val omega_ruby_alpha_sapphire: OmegaRubyAlphaSapphire?,
-    val x_y: XY?
-) {
+    @SerializedName("omegaruby-alphasapphire")val omega_ruby_alpha_sapphire: OmegaRubyAlphaSapphire?,
+    @SerializedName("x-y") val x_y: XY?
+) : IGeneration {
     data class OmegaRubyAlphaSapphire(
         val front_default: String?,
         val front_female: String?,
         val front_shiny: String?,
         val front_shiny_female: String?
-    )
+    ): IGame
     data class XY(
         val front_default: String?,
         val front_female: String?,
         val front_shiny: String?,
         val front_shiny_female: String?
-    )
+    ): IGame
 }

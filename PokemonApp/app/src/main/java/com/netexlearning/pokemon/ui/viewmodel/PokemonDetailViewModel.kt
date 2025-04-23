@@ -3,8 +3,6 @@ package com.netexlearning.pokemon.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.netexlearning.pokemon.PokemonDetail
-import com.netexlearning.pokemon.data.mapper.PokemonMapper.toDomain
-import com.netexlearning.pokemon.data.mapper.PokemonMapper.toEntity
 import com.netexlearning.pokemon.data.repository.PokemonRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,14 +20,9 @@ class PokemonDetailViewModel @Inject constructor(
     fun fetchPokemonDetail(pokemonId: Int) {
         viewModelScope.launch {
             try {
-                val detailFromDb = repository.getPokemonDetailFromDao(pokemonId)
-                if (detailFromDb != null) {
-                    _pokemonDetail.value = detailFromDb.toDomain()
-                } else {
-                    val detailFromApi = repository.getPokemonDetailFromApi(pokemonId)
-                    repository.insertPokemonDetail(detailFromApi.toEntity())
-                    _pokemonDetail.value = detailFromApi
-                }
+                repository.fetchAndStorePokemonDetailFromApi(pokemonId)
+                val pokemonDetail = repository.getPokemonDetailFromDao(pokemonId)
+                _pokemonDetail.value = pokemonDetail
             } catch (e: Exception) {
                 println("Error obteniendo detalles del Pokémon: ${e.message}")
             }

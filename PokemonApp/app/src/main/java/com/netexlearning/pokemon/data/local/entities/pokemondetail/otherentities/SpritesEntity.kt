@@ -1,13 +1,12 @@
 package com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "pokemon_sprites", primaryKeys = ["pokemonId", "generation", "game", "type"])
 data class SpritesEntity(
-    val frontDefault: String,
-    val backDefault: String,
-    val frontShiny: String,
-    val backShiny: String,
-    val frontFemale: String,
-    val backFemale: String,
-    val frontShinyFemale: String,
-    val backShinyFemale: String,
-    val versions: VersionsSpritesEntity,
-)
+    val pokemonId: Int,
+    val generation: Generation,
+    val game: Game,
+    val type: SpriteType,
+    val url: String?)

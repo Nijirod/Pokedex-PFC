@@ -60,11 +60,11 @@ data class Sprites(
     val front_female: String?,
     val front_shiny: String?,
     val front_shiny_female: String?,
-    val versions: Versions? = null
+    val versions: Versions?
 )
 
 data class Versions(
-    @SerializedName("generation-i") val generation_i: GenerationI?,
+    @SerializedName("generation-i") val generation_i: GenerationI,
     @SerializedName("generation-ii") val generation_ii: GenerationII?,
     @SerializedName("generation-iii") val generation_iii: GenerationIII?,
     @SerializedName("generation-iv") val generation_iv: GenerationIV?,
@@ -87,11 +87,9 @@ data class AbilityDetail(
 
 data class Stats(
     val base_stat: Int?,
-    val effort: Int?,
     val stat: Stat?
 )
 
 data class Stat(
     val name: String?,
-    val url: String?
 )
