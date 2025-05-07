@@ -1,18 +1,36 @@
 package com.netexlearning.pokemon.ui.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.netexlearning.pokemon.ui.components.ThemeSelector
+import com.netexlearning.pokemon.ui.components.LanguageSelector
 
 @Composable
-fun SettingsScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+fun SettingsScreen(
+    currentTheme: String,
+    onThemeChange: (String) -> Unit,
+    currentLanguage: String,
+    onLanguageChange: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(text = "Settings Screen Placeholder")
+        Text(text = "Configuración", style = MaterialTheme.typography.headlineMedium)
+
+        ThemeSelector(
+            currentTheme = currentTheme,
+            onThemeChange = onThemeChange
+        )
+
+        LanguageSelector(
+            currentLanguage = currentLanguage,
+            onLanguageChange = onLanguageChange
+        )
     }
 }

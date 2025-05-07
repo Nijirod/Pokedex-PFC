@@ -1,5 +1,6 @@
 package com.netexlearning.pokemon.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,7 +11,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.netexlearning.pokemon.PokemonList
-import com.netexlearning.pokemon.ui.components.PokemonItem
+import com.netexlearning.pokemon.ui.components.PokemonImageItem
+import com.netexlearning.pokemon.ui.components.PokemonListItem
 import com.netexlearning.pokemon.ui.navigation.PokemonNavigation
 import com.netexlearning.pokemon.ui.viewmodel.PokemonListViewModel
 
@@ -21,14 +23,24 @@ fun PokemonListScreen(
 ) {
     val viewModel: PokemonListViewModel = hiltViewModel()
     val pokemonList by viewModel.pokemonList.collectAsState()
+    Row {
+        PokemonImageItem(
+            pokemon = PokemonList(
+                name = "Pikachu",
+                url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/4.png",
+                isFavorite = false
+            ),
+            onItemClick = { pokemonNavigation.navigateToDetail(it.id.toInt()) }
+        )
+        PokemonListContent(
+            pokemonList = pokemonList,
+            modifier = modifier,
+            onItemClick = { pokemonNavigation.navigateToDetail(it.id.toInt()) },
+            onLoadMore = { viewModel.loadNextPage() },
+            viewModel = viewModel
+        )
+    }
 
-    PokemonListContent(
-        pokemonList = pokemonList,
-        modifier = modifier,
-        onItemClick = { pokemonNavigation.navigateToDetail(it.id.toInt()) },
-        onLoadMore = { viewModel.loadNextPage() },
-        viewModel = viewModel
-    )
 }
 
 @Composable
@@ -45,12 +57,14 @@ private fun PokemonListContent(
             .fillMaxWidth()
     ) {
         items(pokemonList) { pokemon ->
-            PokemonItem(
+            PokemonListItem(
                 pokemon = pokemon,
                 isFavorite = pokemon.isFavorite,
-                onItemClick = onItemClick,
                 onFavoriteClick = { isFavorite ->
                     viewModel.updateFavoriteStatus(pokemon, isFavorite)
+                },
+                onItemClick = {
+                    onItemClick(pokemon)
                 }
             )
         }

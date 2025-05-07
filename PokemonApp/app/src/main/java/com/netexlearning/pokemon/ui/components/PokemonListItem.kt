@@ -17,23 +17,15 @@ import coil.compose.AsyncImage
 import com.netexlearning.pokemon.PokemonList
 
 @Composable
-fun PokemonItem(
+fun PokemonListItem(
     pokemon: PokemonList,
     isFavorite: Boolean,
     onItemClick: (PokemonList) -> Unit,
     onFavoriteClick: (Boolean) -> Unit
 ) {
-    Column(modifier = Modifier.padding(8.dp)) {
+    Column(modifier = Modifier.padding(8.dp).clickable{onItemClick(pokemon)}) {
         Text(text = "Name: ${pokemon.name}")
-        AsyncImage(
-            model = pokemon.urlImage,
-            contentDescription = "Image of ${pokemon.name}",
-            modifier = Modifier
-                .padding(8.dp)
-                .size(128.dp)
-                .clickable { onItemClick(pokemon) },
-            contentScale = ContentScale.Crop
-        )
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
@@ -45,4 +37,20 @@ fun PokemonItem(
             }
         }
     }
+}
+
+@Composable
+fun PokemonImageItem(
+    pokemon: PokemonList,
+    onItemClick: (PokemonList) -> Unit
+){
+    AsyncImage(
+        model = pokemon.urlImage,
+        contentDescription = "Image of ${pokemon.name}",
+        modifier = Modifier
+            .padding(8.dp)
+            .size(128.dp)
+            .clickable { onItemClick(pokemon) },
+        contentScale = ContentScale.Crop
+    )
 }

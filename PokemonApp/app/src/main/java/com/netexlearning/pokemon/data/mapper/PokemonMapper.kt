@@ -18,6 +18,7 @@ import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities
 import com.netexlearning.pokemon.data.local.entities.views.PokemonDetailView
 import com.netexlearning.pokemon.data.mapper.interfaces.IGame
 import com.netexlearning.pokemon.data.mapper.interfaces.IGeneration
+import kotlin.io.println
 import kotlin.reflect.KProperty1
 
 
@@ -152,7 +153,11 @@ object PokemonMapper {
                                     url = url
                                 )
                             )
+                            println("Sprite básico agregado: $spriteType -> $url")
+
                         } catch (e: IllegalArgumentException) {
+                            println("Tipo de sprite no reconocido: ${property.name}")
+
                         }
                     }
                 }
@@ -163,6 +168,7 @@ object PokemonMapper {
             Generation.entries.forEach { generation ->
                 val generationData = versions::class.members.find { it.name == generation.jsonKey }?.call(versions)
                 if (generationData != null && (generationData is IGeneration || generationData is String)) {
+                    println("Procesando generación: ${generation.name}")
                     getGames(generationData, spriteEntities, detailResponse, generation)
                 }
             }
@@ -182,6 +188,7 @@ object PokemonMapper {
             Game.entries.forEach { game ->
                 val gameData = generationData::class.members.find { it.name == game.jsonKey }?.call(generationData)
                 if (gameData != null && (gameData is IGame || gameData is String)) {
+                    println("Procesando juego: ${game.name} en generación: ${generation.name}")
                     spriteEntities.addAll(getSprites(gameData, detailResponse, generation, game))
                 }
             }
@@ -210,6 +217,7 @@ object PokemonMapper {
                             url = url
                         )
                     )
+                    println("Sprite agregado: ${spriteType.name} -> $url (Generación: ${generation.name}, Juego: ${game.name})")
                 }
             }
         }

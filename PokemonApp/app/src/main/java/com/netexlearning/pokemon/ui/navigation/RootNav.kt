@@ -13,6 +13,9 @@ import com.netexlearning.pokemon.ui.screens.PokemonListScreen
 import com.netexlearning.pokemon.ui.screens.PokemonDetailScreen
 import com.netexlearning.pokemon.ui.screens.SearchScreen
 import com.netexlearning.pokemon.ui.screens.SettingsScreen
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.netexlearning.pokemon.ui.viewmodel.SettingsViewModel
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun RootNav(navController: NavHostController, modifier: Modifier = Modifier) {
@@ -67,7 +70,14 @@ fun NavGraphBuilder.addSettingsNavGraph(navController: NavHostController) {
         route = ScreenRoutes.SettingsNav.route
     ) {
         composable(ScreenRoutes.SettingsScreen.route) {
-            SettingsScreen()
+            val settingsViewModel: SettingsViewModel = hiltViewModel()
+
+            SettingsScreen(
+                currentTheme = settingsViewModel.currentTheme.collectAsState().value,
+                onThemeChange = { newTheme -> settingsViewModel.changeTheme(newTheme) },
+                currentLanguage = "Español",
+                onLanguageChange = {}
+            )
         }
     }
 }
