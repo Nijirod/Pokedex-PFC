@@ -1,5 +1,6 @@
 package com.netexlearning.pokemon.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -21,15 +22,27 @@ fun PokemonListItem(
     pokemon: PokemonList,
     isFavorite: Boolean,
     onItemClick: (PokemonList) -> Unit,
-    onFavoriteClick: (Boolean) -> Unit
+    onFavoriteClick: (Boolean) -> Unit,
+    isSelected: Boolean = false
 ) {
-    Column(modifier = Modifier.padding(8.dp).clickable{onItemClick(pokemon)}) {
-        Text(text = "Name: ${pokemon.name}")
-
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
+            .clickable { onItemClick(pokemon) }
+    ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(if (isSelected) Color.LightGray else Color.Transparent)
+                .padding(8.dp),
             horizontalArrangement = Arrangement.End
         ) {
+            Text(
+                text = "${pokemon.id}   ${pokemon.name}",
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(top = 8.dp)
+            )
             IconButton(onClick = { onFavoriteClick(!isFavorite) }) {
                 val icon = if (isFavorite) Icons.Filled.Star else Icons.Outlined.Star
                 val iconColor = if (isFavorite) Color.Yellow else Color.Gray

@@ -74,23 +74,18 @@ fun PokemonDetailScreen(
          Spacer(modifier = Modifier.height(16.dp))
 
          detail.sprites
-             ?.filter { it.type == SpriteType.FRONT_DEFAULT }
-             ?.forEach { sprite ->
+             ?.firstOrNull { it.type == SpriteType.FRONT_DEFAULT }
+             ?.let { sprite ->
                  AsyncImage(
-                     model = ImageRequest.Builder(LocalContext.current)
-                         .data(sprite.url)
-                         .transformations(ImageResizer(200.dp, 200.dp))
-                         .build(),
+                     model = detail.sprites
+                         .firstOrNull { it.type == SpriteType.FRONT_DEFAULT }
+                         ?.let { "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${it.pokemonId}.png" },
                      contentDescription = stringResource(R.string.image_of, detail.name ?: ""),
                      modifier = Modifier
                          .padding(8.dp)
                          .size(128.dp)
                          .align(Alignment.CenterHorizontally),
                  )
-                    Text(
-                        text = stringResource(R.string.image_of,sprite.game.name),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
              }
 
          Spacer(modifier = Modifier.height(16.dp))
