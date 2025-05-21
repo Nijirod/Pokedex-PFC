@@ -1,15 +1,24 @@
 package com.netexlearning.pokemon.ui.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import com.netexlearning.pokemon.ui.components.DropdownMenu
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TopAppBar
 import kotlinx.coroutines.flow.filter
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.netexlearning.pokemon.utils.getCenteredPokemonIndex
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -19,6 +28,9 @@ import com.netexlearning.pokemon.ui.components.PokemonImageItem
 import com.netexlearning.pokemon.ui.components.PokemonListItem
 import com.netexlearning.pokemon.ui.navigation.PokemonNavigation
 import com.netexlearning.pokemon.ui.viewmodel.PokemonListViewModel
+import com.netexlearning.pokemon.utils.rememberPokemonListState
+import dev.chrisbanes.snapper.ExperimentalSnapperApi
+import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
 
 @Composable
 fun PokemonListScreen(
@@ -27,39 +39,63 @@ fun PokemonListScreen(
 ) {
     val viewModel: PokemonListViewModel = hiltViewModel()
     val pokemonList by viewModel.pokemonList.collectAsState()
-    var selectedPokemon by remember { mutableStateOf(pokemonList.firstOrNull()) }
-    Row(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Box(
-            modifier = Modifier
-                .weight(0.4f)
-                .fillMaxHeight(),
-            contentAlignment = Alignment.Center
-        ) {
-            selectedPokemon?.let { pokemon ->
-                PokemonImageItem(
-                    pokemon = pokemon,
-                    onItemClick = { pokemonNavigation.navigateToDetail(pokemon.id.toInt()) }
-                )
-            }
+    var selectedPokemon by rememberPokemonListState(pokemonList.firstOrNull())
+    var filterText by remember { mutableStateOf("") }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Pokédex") },
+                modifier = Modifier.fillMaxWidth()
+                    .background(Color.Red),
+                actions = {
+                    DropdownMenu(
+                        options = listOf("All", "Favorites"),
+                        selectedOption = if (filterText.isEmpty()) "All" else "Favorites",
+                        onOptionSelected = { option ->
+                            filterText = if (option == "All") "" else pokemonList.filter { it.isFavorite }
+                                .joinToString(", ") { it.name }
+                        }
+                    )
+                }
+            )
         }
-        PokemonListContent(
-            pokemonList = pokemonList,
-            modifier = Modifier.weight(0.6f),
-            onItemClick = { pokemon ->
-                selectedPokemon = pokemon
-                pokemonNavigation.navigateToDetail(pokemon.id.toInt())
-            },
-            onLoadMore = { viewModel.loadNextPage() },
-            viewModel = viewModel,
-            onPokemonSelected = { selectedPokemon = it },
-            selectedPokemon = selectedPokemon
-        )
+    ) { paddingValues ->
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(0.4f)
+                    .fillMaxHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                selectedPokemon?.let { pokemon ->
+                    PokemonImageItem(
+                        pokemon = pokemon,
+                        onItemClick = { pokemonNavigation.navigateToDetail(pokemon.id.toInt()) }
+                    )
+                }
+            }
+            PokemonListContent(
+                pokemonList = pokemonList.filter { it.name.contains(filterText, ignoreCase = true) },
+                modifier = Modifier.weight(0.6f),
+                onItemClick = { pokemon ->
+                    selectedPokemon = pokemon
+                    pokemonNavigation.navigateToDetail(pokemon.id.toInt())
+                },
+                onLoadMore = { viewModel.loadNextPage() },
+                viewModel = viewModel,
+                onPokemonSelected = { selectedPokemon = it },
+                selectedPokemon = selectedPokemon
+            )
+        }
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalSnapperApi::class)
 @Composable
 private fun PokemonListContent(
     pokemonList: List<PokemonList>,
@@ -68,37 +104,38 @@ private fun PokemonListContent(
     onLoadMore: () -> Unit = {},
     viewModel: PokemonListViewModel,
     onPokemonSelected: (PokemonList) -> Unit,
-    selectedPokemon: PokemonList?
+    selectedPokemon: PokemonList?,
 ) {
     val listState = rememberLazyListState()
+    val snapperFlingBehavior = rememberSnapperFlingBehavior(listState)
 
-    LaunchedEffect(listState) {
-        snapshotFlow { listState.layoutInfo.visibleItemsInfo }
-            .collect { visibleItems ->
-                if (visibleItems.isNotEmpty() && pokemonList.isNotEmpty()) {
-                    val center = listState.layoutInfo.viewportEndOffset / 2
-                    val centerItem = visibleItems.minByOrNull {
-                        kotlin.math.abs((it.offset + it.size / 2) - center)
-                    }
-                    centerItem?.let {
-                        val centerIndex = it.index.coerceIn(0, pokemonList.size - 1)
-                        if (pokemonList[centerIndex] != selectedPokemon) {
-                            onPokemonSelected(pokemonList[centerIndex])
-                        }
-                    }
-                }
+    LaunchedEffect(listState.firstVisibleItemIndex, listState.firstVisibleItemScrollOffset) {
+        getCenteredPokemonIndex(
+            listState = listState,
+            itemCount = pokemonList.size,
+            spacerOffset = 1
+        )?.let { index ->
+            val pokemon = pokemonList[index]
+            if (pokemon != selectedPokemon) {
+                onPokemonSelected(pokemon)
             }
+        }
     }
+
+
     LaunchedEffect(pokemonList) {
         if (selectedPokemon !in pokemonList) {
             pokemonList.firstOrNull()?.let { onPokemonSelected(it) }
         }
     }
+
     LazyColumn(
         state = listState,
+        flingBehavior = snapperFlingBehavior,
         modifier = modifier
             .padding(16.dp)
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        contentPadding = PaddingValues(vertical = 210.dp)
     ) {
         itemsIndexed(pokemonList) { index, pokemon ->
             val isSelected = pokemon == selectedPokemon
@@ -115,13 +152,13 @@ private fun PokemonListContent(
                 isSelected = isSelected
             )
         }
-
         item {
             LaunchedEffect(Unit) {
                 onLoadMore()
             }
         }
     }
+
 }
 
 @Composable

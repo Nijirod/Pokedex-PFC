@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -83,7 +85,9 @@ dependencies {
     kapt(libs.androidx.room.compiler)
     implementation(libs.room.ktx)
     implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.runtime)
+    implementation(libs.accompanist.insets)
+    implementation (libs.snapper)
+    implementation ("dev.chrisbanes.snapper:snapper:0.3.0")
     kapt("androidx.room:room-compiler:2.7.0")
     implementation( libs.androidx.room.ktx)
     implementation (libs.kotlin.reflect)

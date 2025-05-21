@@ -5,16 +5,19 @@ import androidx.lifecycle.viewModelScope
 import com.netexlearning.pokemon.PokemonList
 import com.netexlearning.pokemon.data.repository.PokemonRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PokemonListViewModel @Inject constructor(private val repository: PokemonRepository) : ViewModel() {
 
-    private val _pokemonList = MutableStateFlow<List<PokemonList>>(emptyList())
-    val pokemonList: StateFlow<List<PokemonList>> get() = _pokemonList
+    val pokemonList: StateFlow<List<PokemonList>> = repository.getPokemonFromDatabase()
+        .map { list -> list.map { PokemonList(it.name, it.url, it.isFavorite) } }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    private val _selectedPokemon = MutableStateFlow<PokemonList?>(null)
+    val selectedPokemon: StateFlow<PokemonList?> get() = _selectedPokemon
 
     private var offset = 0
     private val limit = 10
@@ -29,38 +32,43 @@ class PokemonListViewModel @Inject constructor(private val repository: PokemonRe
                 if (pokemonFromDb.size < limit) {
                     repository.fetchAndStorePokemonList(limit, offset)
                 }
-                val updatedPokemon = repository.getAllPokemonList(limit, offset)
-                val newPokemon = updatedPokemon.map { PokemonList(it.name, it.url, it.isFavorite) }
-                _pokemonList.value = _pokemonList.value + newPokemon
                 offset += limit
+
+                if (_selectedPokemon.value == null && pokemonList.value.isNotEmpty()) {
+                    _selectedPokemon.value = pokemonList.value.first()
+                }
             } catch (e: Exception) {
                 println("Error obteniendo Pokémon: ${e.message}")
             }
             isFetching = false
         }
     }
+
     fun updateFavoriteStatus(pokemonList: PokemonList, isFavorite: Boolean) {
         viewModelScope.launch {
-            try {
-                repository.updatePokemonFavoriteStatus(pokemonList.name, isFavorite)
-                val updatedList = _pokemonList.value.map {
-                    if (it.name == pokemonList.name) it.copy(isFavorite = isFavorite) else it
-                }
-                _pokemonList.value = updatedList
-            } catch (e: Exception) {
-                println("Error actualizando estado de favorito: ${e.message}")
-            }
+            repository.updatePokemonFavoriteStatus(pokemonList.name, isFavorite)
         }
     }
 
-
     fun loadNextPage() {
-        fetchPokemonList()
+        if (!isFetching) {
+            fetchPokemonList()
+        }
     }
 
     fun resetPage() {
         offset = 0
-        _pokemonList.value = listOf()
         fetchPokemonList()
+    }
+
+    fun selectPokemon(pokemon: PokemonList) {
+        println("Selected Pokemon: ${pokemon.name}")
+        _selectedPokemon.value = pokemon
+    }
+
+    fun selectPokemonByIndex(index: Int) {
+        if (index in pokemonList.value.indices) {
+            _selectedPokemon.value = pokemonList.value[index]
+        }
     }
 }

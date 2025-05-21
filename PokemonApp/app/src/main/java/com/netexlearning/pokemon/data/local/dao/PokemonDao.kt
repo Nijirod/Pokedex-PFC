@@ -1,6 +1,7 @@
 package com.netexlearning.pokemon.data.local.dao
 
 import androidx.room.*
+import com.netexlearning.pokemon.PokemonList
 import com.netexlearning.pokemon.data.local.entities.views.PokemonListWithFavoriteView
 import com.netexlearning.pokemon.data.local.entities.pokemondetail.PokemonDetailEntity
 import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.AbilityEntity
@@ -14,6 +15,7 @@ import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities
 import com.netexlearning.pokemon.data.local.entities.pokemonfavorite.PokemonFavoriteEntity
 import com.netexlearning.pokemon.data.local.entities.pokemonlist.PokemonListEntity
 import com.netexlearning.pokemon.data.local.entities.views.PokemonDetailView
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PokemonDao {
@@ -58,6 +60,16 @@ interface PokemonDao {
     LIMIT :limit OFFSET :offset
     """)
     suspend fun getAllPokemonList(limit: Int, offset: Int): List<PokemonListWithFavoriteView>
+
+    @Query("""
+    SELECT
+        pokemon_list.name,
+        pokemon_list.url,
+        COALESCE(pokemon_favorite.isFavorite, 0) AS isFavorite
+    FROM pokemon_list
+    LEFT JOIN pokemon_favorite ON pokemon_list.id = pokemon_favorite.id
+    """)
+    fun allPokemonList(): Flow<List<PokemonList>>
 
     @Query("""
     SELECT

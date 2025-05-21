@@ -1,6 +1,7 @@
 package com.netexlearning.pokemon.data.repository
 
 import com.netexlearning.pokemon.PokemonDetail
+import com.netexlearning.pokemon.PokemonList
 import com.netexlearning.pokemon.api.PokemonApiServiceInterface
 import com.netexlearning.pokemon.data.local.dao.PokemonDao
 import com.netexlearning.pokemon.data.local.entities.pokemonlist.PokemonListEntity
@@ -8,12 +9,14 @@ import com.netexlearning.pokemon.data.local.entities.views.PokemonListWithFavori
 import com.netexlearning.pokemon.data.local.entities.pokemonfavorite.PokemonFavoriteEntity
 import com.netexlearning.pokemon.data.mapper.PokemonMapper
 import com.netexlearning.pokemon.data.mapper.PokemonMapper.toDomain
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class PokemonRepository @Inject constructor(
     private val apiService: PokemonApiServiceInterface,
     private val pokemonDao: PokemonDao
 ) {
+    fun getPokemonFromDatabase(): Flow<List<PokemonList>> = pokemonDao.allPokemonList()
 
     suspend fun fetchAndStorePokemonList(limit: Int, offset: Int): List<PokemonListEntity> {
         val apiResponse = apiService.getPokemonList(limit, offset)
