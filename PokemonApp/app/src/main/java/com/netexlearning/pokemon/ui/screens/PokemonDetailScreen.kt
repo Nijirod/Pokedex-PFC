@@ -1,6 +1,8 @@
  package com.netexlearning.pokemon.ui.screens
 
+import ChoosePokemonSpriteScreen
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -9,13 +11,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.netexlearning.pokemon.PokemonDetail
 import com.netexlearning.pokemon.R
 import com.netexlearning.pokemon.data.local.entities.pokemondetail.otherentities.SpriteType
@@ -31,24 +31,42 @@ fun PokemonDetailScreen(
 ) {
     val scrollState = rememberScrollState()
     val pokemonDetail by viewModel.pokemonDetail.collectAsState()
+    var showSpriteChooser by remember { mutableStateOf(false) }
+    var selectedSpriteUrl by remember { mutableStateOf<String?>(null) }
+
 
     LaunchedEffect(Unit) {
         viewModel.fetchPokemonDetail(pokemonId)
     }
 
+
     pokemonDetail?.let { detail ->
         PokemonDetailContent(
             detail = detail,
             modifier = modifier,
-            scrollState = scrollState
+            scrollState = scrollState,
+            selectedSpriteUrl = selectedSpriteUrl,
+            onImageClick = { showSpriteChooser = true }
         )
+        if (showSpriteChooser) {
+            ChoosePokemonSpriteScreen(
+                sprites = detail.sprites?.mapNotNull { it.url } ?: emptyList(),
+                onSpriteSelected = { url ->
+                    selectedSpriteUrl = url
+                    showSpriteChooser = false
+                },
+                onDismiss = { showSpriteChooser = false }
+            )
+        }
     }
 }
  @Composable
  private fun PokemonDetailContent(
      detail: PokemonDetail,
      modifier: Modifier,
-     scrollState: ScrollState
+     scrollState: ScrollState,
+     selectedSpriteUrl: String?,
+     onImageClick: () -> Unit
  ) {
      Column(
          modifier = modifier
@@ -76,19 +94,20 @@ fun PokemonDetailScreen(
          detail.sprites
              ?.firstOrNull { it.type == SpriteType.FRONT_DEFAULT }
              ?.let { sprite ->
+                 val spriteUrl = selectedSpriteUrl
+                     ?: detail.sprites?.firstOrNull { it.type == SpriteType.FRONT_DEFAULT }
+                         ?.let { "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${it.pokemonId}.png" }
+
                  AsyncImage(
-                     model = detail.sprites
-                         .firstOrNull { it.type == SpriteType.FRONT_DEFAULT }
-                         ?.let { "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${it.pokemonId}.png" },
+                     model = spriteUrl,
                      contentDescription = stringResource(R.string.image_of, detail.name ?: ""),
                      modifier = Modifier
                          .padding(8.dp)
                          .size(128.dp)
-                         .align(Alignment.CenterHorizontally),
+                         .align(Alignment.CenterHorizontally)
+                         .clickable { onImageClick() }
                  )
              }
-
-         Spacer(modifier = Modifier.height(16.dp))
          Text(
              text = stringResource(R.string.species, detail.species.name ?: ""),
              style = MaterialTheme.typography.bodyMedium
@@ -104,9 +123,6 @@ fun PokemonDetailScreen(
              ),
              style = MaterialTheme.typography.bodyMedium
          )
-
-         Spacer(modifier = Modifier.height(16.dp))
-
          detail.stats?.let { stats ->
              Column(
                  modifier = Modifier
